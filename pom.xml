@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.unideb.inf</groupId>
-    <artifactId>homework-template-project<!-- TODO: replace "homework-template-project" with a suitable artifactId --></artifactId>
+    <artifactId>homework-project-2025-rol2005hun</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <description><!-- TODO: a brief description of your project --></description>
+    <description>This application simulates a puzzle on a 4×3 chessboard where 3 white knights are placed on the bottom row and 3 black knights on the top row. The goal is to swap their positions using only legal knight moves. Knights cannot move to squares attacked by opposing knights, and players must alternate turns, starting with white.</description>
     <developers>
         <developer>
-            <name><!-- TODO: your full name --></name>
-            <email><!-- TODO: your email address --></email>
+            <name>Ranyák Roland Adalbert</name>
+            <email>rol2005hun@mailbox.unideb.hu</email>
             <organization>Faculty of Informatics, University of Debrecen</organization>
             <organizationUrl>https://inf.unideb.hu/</organizationUrl>
         </developer>
@@ -24,7 +24,7 @@
         <jacoco.version>0.8.13</jacoco.version>
         <maven.checkstyle.version>3.6.0</maven.checkstyle.version>
         <maven.surefire.version>3.5.3</maven.surefire.version>
-        <exec.mainClass><!-- TODO: the fully-qualified class name of your class that contains the main() method to launch the application --></exec.mainClass>
+        <exec.mainClass>knightswap.Main</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>
@@ -54,6 +54,18 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog-api</artifactId>
+            <version>2.8.0-M1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog-impl</artifactId>
+            <version>2.8.0-M1</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     <build>
