@@ -20,12 +20,12 @@ public class KnightSwapState implements State<String> {
     /**
      * The board representation, where {@code 'D'} is a dark knight, {@code 'L'} is a light knight, and {@code '.'} is an empty square.
      */
-    private final char[][] board;
+    final char[][] board;
 
     /**
      * The type of piece whose turn it is to move next.
      */
-    private PieceType currentPlayer;
+    PieceType currentPlayer;
 
     /**
      * Creates a new {@code KnightSwapState} with the initial board setup.
@@ -83,7 +83,15 @@ public class KnightSwapState implements State<String> {
 
     @Override
     public boolean isSolved() {
-        return false;
+        boolean darkKnightsAtBottom = (getPieceAt(3, 0) == PieceType.DARK.getSymbol() &&
+                getPieceAt(3, 1) == PieceType.DARK.getSymbol() &&
+                getPieceAt(3, 2) == PieceType.DARK.getSymbol());
+
+        boolean lightKnightsAtTop = (getPieceAt(0, 0) == PieceType.LIGHT.getSymbol() &&
+                getPieceAt(0, 1) == PieceType.LIGHT.getSymbol() &&
+                getPieceAt(0, 2) == PieceType.LIGHT.getSymbol());
+
+        return darkKnightsAtBottom && lightKnightsAtTop;
     }
 
     @Override
