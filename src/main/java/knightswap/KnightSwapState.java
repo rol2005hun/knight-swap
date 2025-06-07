@@ -4,6 +4,7 @@ import puzzle.State;
 import org.tinylog.Logger;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -83,6 +84,13 @@ public class KnightSwapState implements State<String> {
         return board[row][col];
     }
 
+    /**
+     * {@inheritDoc}
+     * Checks if the puzzle is solved. The puzzle is solved when all light knights
+     * are in the top row (row 0) and all dark knights are in the bottom row (row 3).
+     *
+     * @return {@code true} if the puzzle is solved, {@code false} otherwise
+     */
     @Override
     public boolean isSolved() {
         boolean darkKnightsAtBottom = (getPieceAt(3, 0) == PieceType.DARK.getSymbol() &&
@@ -96,15 +104,45 @@ public class KnightSwapState implements State<String> {
         return darkKnightsAtBottom && lightKnightsAtTop;
     }
 
+    /**
+     * {@inheritDoc}
+     * Returns a set of all legal moves for the {@link #currentPlayer}.
+     * A move is represented as a string "startRow startCol endRow endCol".
+     *
+     * @return a {@link Set} of legal moves
+     */
     @Override
     public Set<String> getLegalMoves() {
-        // TODO: Implement actual legal move generation
-        return Set.of();
-    }
+        Set<String> legalMoves = new HashSet<>();
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 3; c++) {
+                char piece = getPieceAt(r, c);
+                if ((currentPlayer == PieceType.LIGHT && piece == PieceType.LIGHT.getSymbol()) ||
+                        (currentPlayer == PieceType.DARK && piece == PieceType.DARK.getSymbol())) {
 
-    @Override
-    public State<String> clone() {
-        return new KnightSwapState(this);
+                    Position start = new Position(r, c);
+                    int[][] knightMoves = {
+                            {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+                            {1, -2}, {1, 2}, {2, -1}, {2, 1}
+                    };
+
+                    for (int[] move : knightMoves) {
+                        int endR = start.row() + move[0];
+                        int endC = start.col() + move[1];
+
+                        if (endR >= 0 && endR < 4 && endC >= 0 && endC < 3) {
+                            Position end = new Position(endR, endC);
+                            String moveString = String.format("%d %d %d %d", start.row(), start.col(), end.row(), end.col());
+                            if (isLegalMove(moveString)) {
+                                legalMoves.add(moveString);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Logger.debug("Generated {} legal moves for current player {}.", legalMoves.size(), currentPlayer);
+        return legalMoves;
     }
 
     /**
@@ -121,6 +159,7 @@ public class KnightSwapState implements State<String> {
                 Logger.warn("Invalid move format: {}. Expected 'startRow startCol endRow endCol'.", moveString);
                 return null;
             }
+
             int startRow = Integer.parseInt(parts[0]);
             int startCol = Integer.parseInt(parts[1]);
             int endRow = Integer.parseInt(parts[2]);
@@ -134,6 +173,7 @@ public class KnightSwapState implements State<String> {
 
             Position start = new Position(startRow, startCol);
             Position end = new Position(endRow, endCol);
+
             return new ParsedMove(start, end);
         } catch (NumberFormatException e) {
             Logger.error("Error parsing move coordinates for move '{}': {}", moveString, e.getMessage());
@@ -141,15 +181,130 @@ public class KnightSwapState implements State<String> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Checks if a specific move is legal.
+     * A move string should be in the format "startRow startCol endRow endCol".
+     *
+     * @param moveString a string representing the move (e.g., "0 0 1 2")
+     * @return {@code true} if the move is legal, {@code false} otherwise
+     */
     @Override
-    public boolean isLegalMove(String s) {
-        // TODO: Implement actual legal move
+    public boolean isLegalMove(String moveString) {
+        ParsedMove parsedMove = parseMoveString(moveString);
+        if (parsedMove == null) {
+            return false;
+        }
+
+        Position start = parsedMove.start();
+        Position end = parsedMove.end();
+
+        char piece = getPieceAt(start.row(), start.col());
+        char targetPiece = getPieceAt(end.row(), end.col());
+
+        if ((currentPlayer == PieceType.LIGHT && piece != PieceType.LIGHT.getSymbol()) ||
+                (currentPlayer == PieceType.DARK && piece != PieceType.DARK.getSymbol())) {
+            Logger.debug("Attempted to move opponent's piece ({}) or empty square ({}) from {}. Current player: {}.", piece, '.', start);
+            return false;
+        }
+
+        if (targetPiece != '.') {
+            Logger.debug("Target square {} is not empty. Contains: {}", end, targetPiece);
+            return false;
+        }
+
+        if (!end.isValidKnightMove(start)) {
+            Logger.debug("Move from {} to {} is not a valid knight move.", start, end);
+            return false;
+        }
+
+        PieceType attackingPieceType = currentPlayer.opponent();
+        if (isAttacked(end, attackingPieceType)) {
+            Logger.debug("Target square {} is attacked by an opposing {} piece.", end, attackingPieceType);
+            return false;
+        }
+
+        Logger.debug("Move {} is legal for {}.", moveString, currentPlayer);
+        return true;
+    }
+
+    /**
+     * Checks if a given position is attacked by a piece of a specific type.
+     * This method looks for any knight of {@code attackingPieceType} that can move to {@code position}.
+     *
+     * @param position the position to check for attacks
+     * @param attackingPieceType the type of piece (e.g., {@link PieceType#DARK}) that would attack
+     * @return {@code true} if the position is attacked by a knight of the specified type, {@code false} otherwise
+     */
+    private boolean isAttacked(Position position, PieceType attackingPieceType) {
+        char attackerSymbol = attackingPieceType.getSymbol();
+
+        int[][] knightMoves = {
+                {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+                {1, -2}, {1, 2}, {2, -1}, {2, 1}
+        };
+
+        for (int[] move : knightMoves) {
+            // Calculate a potential attacker's position
+            int attackerRow = position.row() + move[0];
+            int attackerCol = position.col() + move[1];
+
+            // Check if potential attacker position is within bounds
+            if (attackerRow >= 0 && attackerRow < 4 && attackerCol >= 0 && attackerCol < 3) {
+                if (getPieceAt(attackerRow, attackerCol) == attackerSymbol) {
+                    Logger.debug("Position {} attacked by {} at ({}, {}).", position, attackerSymbol, attackerRow, attackerCol);
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     * Applies the specified move to the current state.
+     * Assumes the move is legal (should be checked with {@link #isLegalMove(String)} beforehand).
+     *
+     * @param moveString a string representing the move (e.g., "0 0 1 2")
+     */
     @Override
-    public void makeMove(String s) {
-        // TODO: Implement actual move
+    public void makeMove(String moveString) {
+        ParsedMove parsedMove = parseMoveString(moveString);
+        if (parsedMove == null) {
+            Logger.error("Cannot make move '{}' as it could not be parsed. This should not happen if isLegalMove was called first.", moveString);
+            throw new IllegalArgumentException("Invalid move string provided to makeMove: " + moveString);
+        }
+
+        Position start = parsedMove.start();
+        Position end = parsedMove.end();
+
+        char piece = board[start.row()][start.col()];
+        board[start.row()][start.col()] = '.';
+        board[end.row()][end.col()] = piece;
+
+        Logger.info("Move made: {} {} -> {} {} (Piece: {}).", start.row(), start.col(), end.row(), end.col(), piece);
+        currentPlayer = currentPlayer.opponent();
+        Logger.debug("Current player switched to {}.", currentPlayer);
+    }
+
+    /**
+     * Returns the current player whose turn it is.
+     *
+     * @return the {@link PieceType} of the current player
+     */
+    public PieceType getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    /**
+     * {@inheritDoc}
+     * Creates and returns a deep copy of the current state.
+     *
+     * @return a new {@code KnightSwapState} object that is a deep copy of this instance
+     */
+    @Override
+    public State<String> clone() {
+        return new KnightSwapState(this);
     }
 
     @Override
@@ -167,6 +322,11 @@ public class KnightSwapState implements State<String> {
         return result;
     }
 
+    /**
+     * Returns a string representation of the current board state.
+     *
+     * @return a string representing the board, including the current player
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -179,14 +339,5 @@ public class KnightSwapState implements State<String> {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    /**
-     * Returns the current player whose turn it is.
-     *
-     * @return the {@link PieceType} of the current player
-     */
-    public PieceType getCurrentPlayer() {
-        return currentPlayer;
     }
 }
