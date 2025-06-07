@@ -2,6 +2,9 @@ package knightswap.util;
 
 /**
  * Represents a position on the chessboard with row and column coordinates.
+ *
+ * @param row The row coordinate of the position.
+ * @param col The column coordinate of the position.
  */
 public record Position(int row, int col) {
 

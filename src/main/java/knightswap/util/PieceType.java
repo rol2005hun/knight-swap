@@ -4,7 +4,14 @@ package knightswap.util;
  * Represents the type of knight piece.
  */
 public enum PieceType {
-    LIGHT('L'), DARK('D');
+    /**
+     * Represents a Light knight, typically starting at the bottom of the board.
+     */
+    LIGHT('L'),
+    /**
+     * Represents a Dark knight, typically starting at the top of the board.
+     */
+    DARK('D');
 
     private final char symbol;
 
