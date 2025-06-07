@@ -5,9 +5,11 @@ import org.tinylog.Logger;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 
 import knightswap.util.PieceType;
 import knightswap.util.Position;
+import knightswap.util.ParsedMove;
 
 /**
  * Represents the state of the KnightSwap puzzle game.
@@ -25,7 +27,7 @@ public class KnightSwapState implements State<String> {
     /**
      * The type of piece whose turn it is to move next.
      */
-    PieceType currentPlayer;
+    private PieceType currentPlayer;
 
     /**
      * Creates a new {@code KnightSwapState} with the initial board setup.
@@ -71,7 +73,7 @@ public class KnightSwapState implements State<String> {
      * @param row the row
      * @param col the column
      * @return the character representing the piece ('D', 'L', or '.')
-     * @throws IllegalArgumentException if the position is out of bounds (should not happen with {@link Position} record)
+     * @throws IllegalArgumentException if the position is out of bounds
      */
     public char getPieceAt(int row, int col) {
         if (row < 0 || row >= 4 || col < 0 || col >= 3) {
@@ -95,8 +97,9 @@ public class KnightSwapState implements State<String> {
     }
 
     @Override
-    public java.util.Set<String> getLegalMoves() {
-        return java.util.Set.of();
+    public Set<String> getLegalMoves() {
+        // TODO: Implement actual legal move generation
+        return Set.of();
     }
 
     @Override
@@ -104,14 +107,49 @@ public class KnightSwapState implements State<String> {
         return new KnightSwapState(this);
     }
 
+    /**
+     * Parses a move string into a {@link ParsedMove} object.
+     * A move string is expected in the format "startRow startCol endRow endCol".
+     *
+     * @param moveString the string representation of the move
+     * @return a {@link ParsedMove} object if parsing is successful, or {@code null} if the string format is invalid or coordinates are out of bounds.
+     */
+    private ParsedMove parseMoveString(String moveString) {
+        try {
+            String[] parts = moveString.split(" ");
+            if (parts.length != 4) {
+                Logger.warn("Invalid move format: {}. Expected 'startRow startCol endRow endCol'.", moveString);
+                return null;
+            }
+            int startRow = Integer.parseInt(parts[0]);
+            int startCol = Integer.parseInt(parts[1]);
+            int endRow = Integer.parseInt(parts[2]);
+            int endCol = Integer.parseInt(parts[3]);
+
+            if (startRow < 0 || startRow >= 4 || startCol < 0 || startCol >= 3 ||
+                    endRow < 0 || endRow >= 4 || endCol < 0 || endCol >= 3) {
+                Logger.warn("Move coordinates out of bounds: {}.", moveString);
+                return null;
+            }
+
+            Position start = new Position(startRow, startCol);
+            Position end = new Position(endRow, endCol);
+            return new ParsedMove(start, end);
+        } catch (NumberFormatException e) {
+            Logger.error("Error parsing move coordinates for move '{}': {}", moveString, e.getMessage());
+            return null;
+        }
+    }
+
     @Override
     public boolean isLegalMove(String s) {
+        // TODO: Implement actual legal move
         return false;
     }
 
     @Override
     public void makeMove(String s) {
-        // TODO
+        // TODO: Implement actual move
     }
 
     @Override

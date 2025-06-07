@@ -1,9 +1,12 @@
 package knightswap;
 
+import knightswap.util.ParsedMove;
 import knightswap.util.PieceType;
+import knightswap.util.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -141,5 +144,31 @@ class KnightSwapStateTest {
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Initial player should be LIGHT");
         initialState.makeMove("some move");
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Player should remain LIGHT as makeMove is unimplemented");
+    }
+
+    @Test
+    void parseMoveString() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        java.lang.reflect.Method method = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
+        method.setAccessible(true);
+
+        ParsedMove validMove = (ParsedMove) method.invoke(initialState, "0 0 1 2");
+        assertNotNull(validMove, "Valid move string should be parsed successfully");
+        assertEquals(new Position(0, 0), validMove.start(), "Start position should match");
+        assertEquals(new Position(1, 2), validMove.end(), "End position should match");
+
+        assertNull(method.invoke(initialState, "0 0 1"), "Invalid move string (too few parts) should return null");
+        assertNull(method.invoke(initialState, "0 0 1 2 3"), "Invalid move string (too many parts) should return null");
+
+        assertNull(method.invoke(initialState, "A 0 1 2"), "Move string with non-integer parts should return null");
+        assertNull(method.invoke(initialState, "0 0 B 2"), "Move string with non-integer parts should return null");
+
+        assertNull(method.invoke(initialState, "-1 0 1 2"), "Out-of-bounds start row should return null");
+        assertNull(method.invoke(initialState, "0 -1 1 2"), "Out-of-bounds start col should return null");
+        assertNull(method.invoke(initialState, "4 0 1 2"), "Out-of-bounds start row (too high) should return null");
+        assertNull(method.invoke(initialState, "0 3 1 2"), "Out-of-bounds start col (too high) should return null");
+        assertNull(method.invoke(initialState, "0 0 -1 2"), "Out-of-bounds end row should return null");
+        assertNull(method.invoke(initialState, "0 0 1 -1"), "Out-of-bounds end col should return null");
+        assertNull(method.invoke(initialState, "0 0 4 2"), "Out-of-bounds end row (too high) should return null");
+        assertNull(method.invoke(initialState, "0 0 1 3"), "Out-of-bounds end col (too high) should return null");
     }
 }
