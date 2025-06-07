@@ -11,6 +11,12 @@ import java.util.Optional;
  */
 public final class ConsoleGame {
     /**
+     * Private constructor to prevent instantiation of this utility class.
+     * This class contains only static methods and should not be instantiated.
+     */
+    private ConsoleGame() {}
+
+    /**
      * The main entry point of the KnightSwap puzzle solver application.
      * Initializes the puzzle, attempts to solve it using Breadth-First Search,
      * and logs the solution path length if found.
