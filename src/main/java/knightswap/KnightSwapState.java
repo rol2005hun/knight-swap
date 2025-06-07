@@ -165,12 +165,6 @@ public class KnightSwapState implements State<String> {
             int endRow = Integer.parseInt(parts[2]);
             int endCol = Integer.parseInt(parts[3]);
 
-            if (startRow < 0 || startRow >= 4 || startCol < 0 || startCol >= 3 ||
-                    endRow < 0 || endRow >= 4 || endCol < 0 || endCol >= 3) {
-                Logger.warn("Move coordinates out of bounds: {}.", moveString);
-                return null;
-            }
-
             Position start = new Position(startRow, startCol);
             Position end = new Position(endRow, endCol);
 
@@ -269,6 +263,11 @@ public class KnightSwapState implements State<String> {
      */
     @Override
     public void makeMove(String moveString) {
+        if (!isLegalMove(moveString)) {
+            Logger.error("Cannot make move '{}' as it is not legal.", moveString);
+            throw new IllegalArgumentException("Illegal move: " + moveString);
+        }
+
         ParsedMove parsedMove = parseMoveString(moveString);
         if (parsedMove == null) {
             Logger.error("Cannot make move '{}' as it could not be parsed. This should not happen if isLegalMove was called first.", moveString);
