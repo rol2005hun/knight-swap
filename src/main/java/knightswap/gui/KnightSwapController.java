@@ -35,6 +35,7 @@ public class KnightSwapController {
     @FXML private Button button31;
     @FXML private Button button32;
 
+    private String playerName;
     private Button[][] buttons;
     private Button firstClickButton = null;
     private Position firstClickPosition = null;
@@ -240,5 +241,13 @@ public class KnightSwapController {
                 buttons[row][col].setDisable(false);
             }
         }
+    }
+
+    /**
+     * Sets the player name.
+     * @param name The given player name by the user.
+     */
+    public void setPlayerName(String name) {
+        this.playerName = name;
     }
 }
