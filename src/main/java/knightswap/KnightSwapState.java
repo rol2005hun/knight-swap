@@ -239,11 +239,9 @@ public class KnightSwapState implements State<String> {
         };
 
         for (int[] move : knightMoves) {
-            // Calculate a potential attacker's position
             int attackerRow = position.row() + move[0];
             int attackerCol = position.col() + move[1];
 
-            // Check if potential attacker position is within bounds
             if (attackerRow >= 0 && attackerRow < 4 && attackerCol >= 0 && attackerCol < 3) {
                 if (getPieceAt(attackerRow, attackerCol) == attackerSymbol) {
                     Logger.debug("Position {} attacked by {} at ({}, {}).", position, attackerSymbol, attackerRow, attackerCol);

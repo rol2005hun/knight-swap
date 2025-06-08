@@ -68,7 +68,7 @@ class KnightSwapStateTest {
 
     @Test
     void getLegalMoves() {
-        assertTrue(initialState.getLegalMoves().isEmpty(), "getLegalMoves should return an empty set (placeholder)");
+        assertTrue(initialState.getLegalMoves().isEmpty(), "getLegalMoves should return an empty set");
     }
 
     @Test
@@ -85,8 +85,8 @@ class KnightSwapStateTest {
 
     @Test
     void isLegalMove() {
-        assertFalse(initialState.isLegalMove("3 0 1 1"), "isLegalMove should return false (placeholder)");
-        assertFalse(initialState.isLegalMove("0 0 1 2"), "isLegalMove should return false (placeholder)");
+        assertTrue(initialState.isLegalMove("3 0 1 1"), "isLegalMove should return true");
+        assertFalse(initialState.isLegalMove("0 0 1 2"), "isLegalMove should return false");
     }
 
     @Test
@@ -137,13 +137,26 @@ class KnightSwapStateTest {
                 L L L\s
                 """;
         assertEquals(expectedInitialString, initialState.toString(), "Initial state toString should match expected");
+
+        initialState.makeMove("3 0 1 1");
+        String expectedAfterMoveString = """
+                Current turn: DARK
+                Board:
+                D D D\s
+                . L .\s
+                . . .\s
+                . L L\s
+                """;
+        assertEquals(expectedAfterMoveString, initialState.toString(), "State after move toString should match expected");
     }
 
     @Test
     void getCurrentPlayer() {
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Initial player should be LIGHT");
-        initialState.makeMove("some move");
-        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Player should remain LIGHT as makeMove is unimplemented");
+        initialState.makeMove("3 0 1 1");
+        assertEquals(PieceType.DARK, initialState.getCurrentPlayer(), "Player should switch to DARK after move");
+        initialState.makeMove("0 0 2 1");
+        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Player should switch back to LIGHT after another move");
     }
 
     @Test
