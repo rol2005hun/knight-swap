@@ -1,7 +1,55 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/UkdUJk5L)
-# TODO: the name of your project
+# Knight Swap Chess Game
 
-TODO: a detailed description of your project (must contain at least the original description of the assignment)
+We are given a 4-row by 3-column chessboard. In the top row, we place 3 black knights, and in the bottom row, we place 3 white knights.
+
+The goal is to swap the positions of the two sets of knights.
+
+Rules:
+- Knights move according to the standard rules of chess (L-shaped knight moves).
+- A knight cannot move to a square that is threatened by an opposing knight.
+- Players take turns: white moves first, then black, and so on.
+
+The puzzle is to find a valid sequence of moves that completes the swap under these constraints.
+
+## Solution Steps
+
+This section provides a sequential list of moves to solve the Knight Swap puzzle. Each step describes a single knight movement from a starting square to a target square.
+
+**Understanding the Move Format:**
+`Step_Number. (Starting_Row, Starting_Column) -> (Target_Row, Target_Column)`
+
+* **`Step_Number.`**: The sequential number of the move.
+* **`(Starting_Row, Starting_Column)`**: The row and column coordinates of the knight's initial position.
+* **`->`**: Indicates the movement direction.
+* **`(Target_Row, Target_Column)`**: The row and column coordinates of the knight's destination position.
+
+**Coordinate System:**
+Rows (Y-coordinates) increase from top to bottom, starting from 0.
+Columns (X-coordinates) increase from left to right, starting from 0.
+
+1.  (3, 0) -> (1, 1)
+2.  (0, 1) -> (2, 2)
+3.  (3, 2) -> (2, 0)
+4.  (0, 0) -> (2, 1)
+5.  (3, 1) -> (1, 2)
+6.  (0, 2) -> (1, 0)
+7.  (1, 1) -> (3, 2)
+8.  (2, 1) -> (0, 2)
+9.  (1, 2) -> (0, 0)
+10. (2, 2) -> (3, 0)
+11. (2, 0) -> (1, 2)
+12. (1, 0) -> (2, 2)
+13. (3, 2) -> (2, 0)
+14. (0, 2) -> (1, 0)
+15. (0, 0) -> (2, 1)
+16. (3, 0) -> (1, 1)
+17. (1, 2) -> (0, 0)
+18. (1, 0) -> (3, 1)
+19. (2, 1) -> (0, 2)
+20. (2, 2) -> (3, 0)
+21. (2, 0) -> (0, 1)
+22. (1, 1) -> (3, 2)
 
 ## Building from Source
 

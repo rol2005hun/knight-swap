@@ -1,5 +1,5 @@
 /**
- * Provides utility classes for the KnightSwap game, such as position representation.
+ * Provides utility classes for the Knight Swap Chess game, such as position representation.
  */
 
 package knightswap.util;
