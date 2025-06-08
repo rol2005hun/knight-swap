@@ -24,7 +24,7 @@
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <Button fx:id="refreshButton" style="-fx-font-size: 23; -fx-background-color: transparent; -fx-text-fill: white;" text="↻" />
+            <Button onAction="#handleResetButton" style="-fx-font-size: 23; -fx-background-color: transparent; -fx-text-fill: white;" text="↻" />
         </HBox>
 
         <GridPane alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: #DEB887; -fx-background-color: #A0522D; -fx-border-width: 6; -fx-padding: 0 0 1 0; -fx-border-radius: 5;">

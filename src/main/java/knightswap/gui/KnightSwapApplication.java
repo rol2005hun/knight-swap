@@ -16,10 +16,10 @@ import java.util.Objects;
  */
 public class KnightSwapApplication extends Application {
     /**
-     * Private constructor to prevent instantiation of this utility class.
+     * Public constructor to prevent instantiation of this utility class.
      * This class contains only static methods and should not be instantiated.
      */
-    private KnightSwapApplication() {}
+    public KnightSwapApplication() {}
 
     /**
      * The entry point for the JavaFX application. This method is called after the

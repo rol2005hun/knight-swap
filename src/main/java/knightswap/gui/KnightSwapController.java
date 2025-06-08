@@ -34,7 +34,6 @@ public class KnightSwapController {
     @FXML private Button button30;
     @FXML private Button button31;
     @FXML private Button button32;
-    @FXML private Button refreshButton;
 
     private Button[][] buttons;
     private Button firstClickButton = null;
@@ -49,10 +48,10 @@ public class KnightSwapController {
     private static final String HIGHLIGHT_STYLE = "-fx-background-color: #6B4226; -fx-background-radius: 0; -fx-border-color: yellow; -fx-border-width: 2;";
 
     /**
-     * Private constructor to prevent instantiation of this utility class.
+     * Public constructor to prevent instantiation of this utility class.
      * This class contains only static methods and should not be instantiated.
      */
-    private KnightSwapController() {}
+    public KnightSwapController() {}
 
     /**
      * Initializes the controller after its root element has been completely processed.
@@ -164,6 +163,23 @@ public class KnightSwapController {
     }
 
     /**
+     * Resets the game board to its initial state.
+     * This method is typically called when the "Reset" button is clicked.
+     */
+    @FXML
+    private void handleResetButton() {
+        gameState = new KnightSwapState();
+        firstClickButton = null;
+        firstClickPosition = null;
+
+        enableAllButtons();
+
+        updateBoard();
+        updateStatusLabel();
+        Logger.info("Game board reset is successful.");
+    }
+
+    /**
      * Updates the visual representation of the board based on the current game state.
      * Sets the text (piece symbol) and resets the background style of each button.
      */
@@ -210,6 +226,18 @@ public class KnightSwapController {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 3; col++) {
                 buttons[row][col].setDisable(true);
+            }
+        }
+    }
+
+    /**
+     * Enables all buttons on the board.
+     * Useful when resetting the puzzle after it was solved.
+     */
+    private void enableAllButtons() {
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 3; col++) {
+                buttons[row][col].setDisable(false);
             }
         }
     }
