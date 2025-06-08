@@ -15,8 +15,25 @@
 
     <VBox style="-fx-background-color: #A0522D; -fx-alignment: center;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
 
-        <HBox spacing="10.0" style="-fx-alignment: CENTER_LEFT; -fx-padding: -10 0 10 0;">
-            <Label fx:id="statusLabel" prefHeight="16.0" prefWidth="273.0" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 0 0 10;" text="KnightSwap" textFill="WHITE">
+        <HBox prefHeight="35.0" prefWidth="273.0" spacing="30.0" style="-fx-alignment: center; -fx-padding: 0 10 10 10;">
+
+            <Label prefHeight="25.0" prefWidth="110.0" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Current Score:" textFill="WHITE">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <Label fx:id="currentScoreLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="0" textFill="WHITE" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Label prefHeight="25.0" prefWidth="86.0" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Best Score:" textFill="WHITE">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <Label fx:id="bestScoreLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="0" textFill="WHITE" />
+        </HBox>
+
+        <HBox spacing="10.0" style="-fx-alignment: CENTER_LEFT; -fx-padding: 0 0 10 0;">
+            <Label fx:id="statusLabel" prefHeight="16.0" prefWidth="273.0" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-padding: 0 0 0 10;" text="White to move" textFill="WHITE">
                 <font>
                     <Font size="16.0" />
                 </font>
@@ -24,7 +41,7 @@
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <Button onAction="#handleResetButton" style="-fx-font-size: 23; -fx-background-color: transparent; -fx-text-fill: white;" text="↻" />
+            <Button onAction="#handleResetButton" style="-fx-font-size: 23; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;" text="↻" />
         </HBox>
 
         <GridPane alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: #DEB887; -fx-background-color: #A0522D; -fx-border-width: 6; -fx-padding: 0 0 1 0; -fx-border-radius: 5;">
