@@ -21,7 +21,6 @@ import java.util.Map;
  * displays the game state, and communicates with the KnightSwapState logic.
  */
 public class KnightSwapController {
-
     @FXML private Label statusLabel;
     @FXML private Button button00;
     @FXML private Button button01;
@@ -35,6 +34,7 @@ public class KnightSwapController {
     @FXML private Button button30;
     @FXML private Button button31;
     @FXML private Button button32;
+    @FXML private Button refreshButton;
 
     private Button[][] buttons;
     private Button firstClickButton = null;
