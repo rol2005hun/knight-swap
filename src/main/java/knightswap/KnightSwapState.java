@@ -172,6 +172,9 @@ public class KnightSwapState implements State<String> {
         } catch (NumberFormatException e) {
             Logger.error("Error parsing move coordinates for move '{}': {}", moveString, e.getMessage());
             return null;
+        } catch (IllegalArgumentException e) {
+            Logger.warn("Move string contains out-of-bounds coordinates: {}. Error: {}", moveString, e.getMessage());
+            return null;
         }
     }
 
