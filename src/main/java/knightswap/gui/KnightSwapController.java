@@ -48,6 +48,11 @@ public class KnightSwapController {
     private static final String LIGHT_SQUARE_STYLE = "-fx-background-color: #FFF8DC; -fx-background-radius: 0;";
     private static final String HIGHLIGHT_STYLE = "-fx-background-color: #6B4226; -fx-background-radius: 0; -fx-border-color: yellow; -fx-border-width: 2;";
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     * This class contains only static methods and should not be instantiated.
+     */
+    private KnightSwapController() {}
 
     /**
      * Initializes the controller after its root element has been completely processed.

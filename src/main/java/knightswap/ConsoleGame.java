@@ -7,7 +7,7 @@ import org.tinylog.Logger;
 import java.util.Optional;
 
 /**
- * The main class which solves the KnightSwap problem with BFS algorithm.
+ * The console game class which solves the KnightSwap problem with BFS algorithm.
  */
 public final class ConsoleGame {
     /**
