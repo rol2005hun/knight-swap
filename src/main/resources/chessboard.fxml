@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -13,7 +15,14 @@
 
 <AnchorPane style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.KnightSwapController">
 
-    <VBox style="-fx-background-color: #A0522D; -fx-alignment: center;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+    <VBox style="-fx-background-color: #A0522D; -fx-alignment: center;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 10 10 10;">
+            <Button style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
+                    text="Help"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
+                    text="Leaderboard"/>
+        </HBox>
 
         <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 0 10 10 10;">
             <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Current Score:" textFill="WHITE" />
@@ -21,6 +30,9 @@
 
             <Region HBox.hgrow="ALWAYS" /> <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Best Score:" textFill="WHITE" />
             <Label fx:id="bestScoreLabel" contentDisplay="CENTER" prefHeight="25.0" prefWidth="21.0" style="-fx-font-size: 16; -fx-font-weight: bold;" text="0" textFill="WHITE" />
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin>
         </HBox>
 
         <HBox spacing="10.0" style="-fx-alignment: CENTER_LEFT; -fx-padding: 0 0 10 0;">
@@ -66,4 +78,5 @@
 
         </GridPane>
     </VBox>
+   <Separator layoutX="14.0" layoutY="54.0" prefHeight="25.0" prefWidth="335.0" />
 </AnchorPane>
