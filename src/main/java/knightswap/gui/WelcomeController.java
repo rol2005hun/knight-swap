@@ -15,8 +15,8 @@ public class WelcomeController {
     @FXML private Button startGameButton;
 
     /**
-     * Public constructor to prevent instantiation of this utility class.
-     * This class contains only static methods and should not be instantiated.
+     * Default constructor for the WelcomeController.
+     * This class is typically instantiated by the FXML loader.
      */
     public WelcomeController() {}
 

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import knightswap.data.ScoreBoardManager;
 import org.tinylog.Logger;
 
 import java.io.IOException;
@@ -14,13 +15,29 @@ import java.io.IOException;
  * initializing and displaying the game's user interface.
  */
 public class KnightSwapApplication extends Application {
+    private static ScoreBoardManager scoreBoardManager;
     private static Stage primaryStage;
 
     /**
-     * Public constructor to prevent instantiation of this utility class.
-     * This class contains only static methods and should not be instantiated.
+     * Default constructor for the KnightSwapApplication.
+     * This class is typically instantiated by the JavaFX runtime.
      */
     public KnightSwapApplication() {}
+
+    /**
+     * Returns the singleton instance of the ScoreBoardManager.
+     * If the instance does not exist yet, it creates and initializes it.
+     * This method ensures that only one instance of ScoreBoardManager is ever created (Singleton pattern).
+     *
+     * @return The single instance of ScoreBoardManager.
+     */
+    public static ScoreBoardManager getScoreBoardManager() {
+        if (scoreBoardManager == null) {
+            scoreBoardManager = new ScoreBoardManager();
+            Logger.info("ScoreBoardManager initialized.");
+        }
+        return scoreBoardManager;
+    }
 
     /**
      * The entry point for the JavaFX application. This method is called after the
@@ -64,6 +81,7 @@ public class KnightSwapApplication extends Application {
      * @throws IOException If the {@code chessboard.fxml} file cannot be loaded.
      */
     public static void showGameScreen(String playerName) throws IOException {
+        KnightSwapController.setPlayerName(playerName);
         FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/chessboard.fxml"));
         Scene scene = new Scene(loader.load());
 
@@ -72,6 +90,18 @@ public class KnightSwapApplication extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
+        getScoreBoardManager();
+
         Logger.info("Game screen loaded!");
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+        if (scoreBoardManager != null) {
+            scoreBoardManager.saveScores();
+            Logger.info("Scores saved on application shutdown.");
+        }
     }
 }

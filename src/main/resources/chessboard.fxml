@@ -15,21 +15,12 @@
 
     <VBox style="-fx-background-color: #A0522D; -fx-alignment: center;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
 
-        <HBox prefHeight="35.0" prefWidth="273.0" spacing="30.0" style="-fx-alignment: center; -fx-padding: 0 10 10 10;">
+        <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 0 10 10 10;">
+            <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Current Score:" textFill="WHITE" />
+            <Label fx:id="currentScoreLabel" prefHeight="25.0" prefWidth="28.0" style="-fx-font-size: 16; -fx-font-weight: bold;" text="0" textFill="WHITE" />
 
-            <Label prefHeight="25.0" prefWidth="110.0" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Current Score:" textFill="WHITE">
-            <font>
-               <Font size="16.0" />
-            </font></Label>
-            <Label fx:id="currentScoreLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="0" textFill="WHITE" />
-
-            <Region HBox.hgrow="ALWAYS" />
-
-            <Label prefHeight="25.0" prefWidth="86.0" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Best Score:" textFill="WHITE">
-            <font>
-               <Font size="16.0" />
-            </font></Label>
-            <Label fx:id="bestScoreLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="0" textFill="WHITE" />
+            <Region HBox.hgrow="ALWAYS" /> <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Best Score:" textFill="WHITE" />
+            <Label fx:id="bestScoreLabel" contentDisplay="CENTER" prefHeight="25.0" prefWidth="21.0" style="-fx-font-size: 16; -fx-font-weight: bold;" text="0" textFill="WHITE" />
         </HBox>
 
         <HBox spacing="10.0" style="-fx-alignment: CENTER_LEFT; -fx-padding: 0 0 10 0;">

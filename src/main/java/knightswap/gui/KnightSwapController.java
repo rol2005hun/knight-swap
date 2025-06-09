@@ -6,6 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
+import knightswap.data.PlayerScore;
+import knightswap.data.ScoreBoardManager;
 import org.tinylog.Logger;
 
 import knightswap.KnightSwapState;
@@ -14,6 +16,7 @@ import knightswap.util.Position;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller class for the KnightSwap game board GUI.
@@ -37,7 +40,8 @@ public class KnightSwapController {
     @FXML private Button button31;
     @FXML private Button button32;
 
-    private String playerName;
+    private int movesMade;
+    private static String playerName;
     private Button[][] buttons;
     private Button firstClickButton = null;
     private Position firstClickPosition = null;
@@ -51,17 +55,26 @@ public class KnightSwapController {
     private static final String HIGHLIGHT_STYLE = "-fx-background-color: #6B4226; -fx-background-radius: 0; -fx-border-color: yellow; -fx-border-width: 2;";
 
     /**
-     * Public constructor to prevent instantiation of this utility class.
-     * This class contains only static methods and should not be instantiated.
+     * Default constructor for the {@code KnightSwapController}.
+     * This constructor is automatically called by the FXML loader when instantiating the controller for the GUI.
      */
     public KnightSwapController() {}
 
     /**
      * Initializes the controller after its root element has been completely processed.
      * This method is automatically called by the FXML loader.
+     * It sets up the game board, initializes game state, and updates the display.
      */
     @FXML
     public void initialize() {
+        if (playerName == null || playerName.isEmpty()) {
+            playerName = "Guest";
+            Logger.warn("Player name not retrieved, defaulting to 'Guest'.");
+        } else {
+            Logger.info("Player name set to: {}", playerName);
+        }
+
+        movesMade = 0;
         gameState = new KnightSwapState();
 
         buttons = new Button[][] {
@@ -87,7 +100,7 @@ public class KnightSwapController {
         }
 
         updateBoard();
-        updateStatusLabel();
+        updateScoreAndStatusLabels();
     }
 
     /**
@@ -138,6 +151,7 @@ public class KnightSwapController {
 
                 if (gameState.isLegalMove(moveString)) {
                     gameState.makeMove(moveString);
+                    movesMade++;
                     Logger.info("Move made: {}.", moveString);
 
                     firstClickButton.setStyle(originalStyles.get(firstClickButton));
@@ -145,12 +159,20 @@ public class KnightSwapController {
                     firstClickPosition = null;
 
                     updateBoard();
-                    updateStatusLabel();
+                    updateScoreAndStatusLabels();
 
                     if (gameState.isSolved()) {
                         statusLabel.setText("Congratulations! Puzzle solved.");
                         Logger.info("KnightSwap puzzle solved!");
                         disableAllButtons();
+
+                        ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
+                        if (manager != null) {
+                            manager.addOrUpdatePlayerScore(playerName, movesMade);
+                            Logger.info("Score {} saved for player {}.", movesMade, playerName);
+                        } else {
+                            Logger.error("ScoreBoardManager is null, cannot save score for player {}.", playerName);
+                        }
                     }
                 } else {
                     Logger.warn("Illegal move attempted from ({}, {}) to ({}, {}).",
@@ -167,10 +189,12 @@ public class KnightSwapController {
 
     /**
      * Resets the game board to its initial state.
+     * Resets the current score to 0.
      * This method is typically called when the "Reset" button is clicked.
      */
     @FXML
     private void handleResetButton() {
+        movesMade = 0;
         gameState = new KnightSwapState();
         firstClickButton = null;
         firstClickPosition = null;
@@ -178,8 +202,8 @@ public class KnightSwapController {
         enableAllButtons();
 
         updateBoard();
-        updateStatusLabel();
-        Logger.info("Game board reset is successful.");
+        updateScoreAndStatusLabels();
+        Logger.info("Game board reset is successful. Moves reset to 0.");
     }
 
     /**
@@ -210,14 +234,30 @@ public class KnightSwapController {
     }
 
     /**
-     * Updates the status label with information about the current player's turn.
-     * Also checks if the game is solved and updates the label accordingly.
+     * Updates all relevant labels on the GUI, including the current game status,
+     * the number of moves made in the current game, and the player's best score.
      */
-    private void updateStatusLabel() {
+    private void updateScoreAndStatusLabels() {
         if (gameState.isSolved()) {
             statusLabel.setText("Congratulations! Puzzle solved.");
         } else {
             statusLabel.setText(String.format("%s to move.", gameState.getCurrentPlayer() == PieceType.LIGHT ? "Light" : "Dark"));
+        }
+
+        currentScoreLabel.setText(String.valueOf(movesMade));
+
+        ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
+        if (manager != null && playerName != null && !playerName.isEmpty()) {
+            Optional<PlayerScore> bestScore = manager.getPlayerScore(playerName);
+            if (bestScore.isPresent()) {
+                bestScoreLabel.setText(String.valueOf(bestScore.get().getBestScore()));
+            } else {
+                bestScoreLabel.setText("0");
+            }
+        } else {
+            bestScoreLabel.setText("0");
+            if (manager == null) Logger.error("ScoreBoardManager is null when updating best score label.");
+            if (playerName == null || playerName.isEmpty()) Logger.warn("Player name is not set when updating best score label.");
         }
     }
 
@@ -249,7 +289,7 @@ public class KnightSwapController {
      * Sets the player name.
      * @param name The given player name by the user.
      */
-    public void setPlayerName(String name) {
-        this.playerName = name;
+    public static void setPlayerName(String name) {
+        playerName = name;
     }
 }
