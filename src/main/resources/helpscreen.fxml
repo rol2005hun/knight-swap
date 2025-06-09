@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<AnchorPane prefWidth="400.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.HelpController">
+    <children>
+          <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #A0522D;">
+              <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+              </padding>
+              <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0">
+                      <children>
+                          <Label text="Knight Swap Puzzle" textFill="WHITE">
+                              <font>
+                                  <Font name="System Bold" size="20.0" /> </font>
+                          </Label>
+                          <Region HBox.hgrow="ALWAYS" />
+                          <Button onAction="#handleExitButton" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-background-color: #DEB887; -fx-text-fill: #A0522D;" text="Exit" /> </children>
+                  </HBox>
+                  <VBox alignment="TOP_LEFT" spacing="10.0">
+                      <children>
+                          <Label style="-fx-font-weight: bold;" text="Game Description:" textFill="WHITE">
+                              <font>
+                                  <Font size="16.0" />
+                              </font>
+                          </Label>
+                          <TextFlow prefWidth="360.0"> <children>
+                              <Text fill="WHITE" text="On a 4-row, 3-column chessboard, place 3 dark knights in the top row and 3 light knights in the bottom row. Swap the figures so that they can move in a regular knight's move, and cannot move to a square attacked by an opposing colored piece. Dark and light figures must move alternately (light begins)." wrappingWidth="360.0">
+                                  <font>
+                                      <Font size="14.0" />
+                                  </font>
+                              </Text>
+                          </children>
+                          </TextFlow>
+                          <Label style="-fx-font-weight: bold;" text="Coordinate System:" textFill="WHITE">
+                              <font>
+                                  <Font size="16.0" />
+                              </font>
+                              <VBox.margin>
+                                  <Insets top="10.0" />
+                              </VBox.margin>
+                          </Label>
+                          <Text fill="WHITE" text="Rows (Y-coordinates) increase from top to bottom, starting from 0. Columns (X-coordinates) increase from left to right, starting from 0." wrappingWidth="360.0">
+                              <font>
+                                  <Font size="14.0" />
+                              </font>
+                          </Text>
+                      </children>
+                  </VBox>
+                  <VBox alignment="TOP_LEFT" spacing="10.0" VBox.vgrow="ALWAYS">
+                      <children>
+                          <Label style="-fx-font-weight: bold;" text="Solution Steps:" textFill="WHITE">
+                              <font>
+                                  <Font size="16.0" />
+                              </font>
+                          </Label>
+                          <TextArea fx:id="solutionStepsTextArea" editable="false" prefHeight="200.0" prefWidth="360.0" style="-fx-control-inner-background: #FFF8DC; -fx-text-fill: #A0522D; -fx-font-size: 14;" wrapText="true">
+                              <font>
+                                  <Font size="14.0" />
+                              </font>
+                          </TextArea>
+                      </children>
+                  </VBox>
+              </children>
+          </VBox>
+    </children>
+</AnchorPane>

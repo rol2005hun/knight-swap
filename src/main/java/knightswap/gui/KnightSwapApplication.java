@@ -75,7 +75,7 @@ public class KnightSwapApplication extends Application {
 
     /**
      * Loads and displays the welcome screen of the application.
-     * This screen allows for the user to enter his name, and after start the game.
+     * This screen allows for the user to play the puzzle game.
      *
      * @param playerName The player's name, who runs the application.
      * @throws IOException If the {@code chessboard.fxml} file cannot be loaded.
@@ -93,6 +93,30 @@ public class KnightSwapApplication extends Application {
         getScoreBoardManager();
 
         Logger.info("Game screen loaded!");
+    }
+
+    /**
+     * Loads and displays the help screen of the application.
+     * This screen allows for the user to get some help for solving the puzzle.
+     *
+     * @throws IOException If the {@code helpscreen.fxml} file cannot be loaded.
+     */
+    public static void showHelpScreen(Stage gameStageToReturnTo) throws IOException {
+        gameStageToReturnTo.hide();
+        Logger.info("Main game screen hidden to show help.");
+
+        FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/helpscreen.fxml"));
+        Stage helpStage = new Stage();
+        Scene helpScene = new Scene(loader.load());
+
+        HelpController helpController = loader.getController();
+        helpController.setGameStage(gameStageToReturnTo);
+
+        helpStage.setTitle("Knight Swap - Help");
+        helpStage.setScene(helpScene);
+        helpStage.setResizable(false);
+        helpStage.show();
+        Logger.info("Help screen opened in a new window.");
     }
 
     @Override

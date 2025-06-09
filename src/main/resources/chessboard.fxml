@@ -17,7 +17,7 @@
 
     <VBox style="-fx-background-color: #A0522D; -fx-alignment: center;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
         <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 10 10 10;">
-            <Button style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
+            <Button onAction="#showHelpScreen" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
                     text="Help"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"

@@ -2,10 +2,12 @@ package knightswap.gui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
 import knightswap.data.ScoreBoardManager;
 import org.tinylog.Logger;
@@ -14,6 +16,7 @@ import knightswap.KnightSwapState;
 import knightswap.util.PieceType;
 import knightswap.util.Position;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -185,6 +188,11 @@ public class KnightSwapController {
                 }
             }
         }
+    }
+
+    public void showHelpScreen(ActionEvent event) throws IOException {
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        KnightSwapApplication.showHelpScreen(currentStage);
     }
 
     /**
