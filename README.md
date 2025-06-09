@@ -83,6 +83,7 @@ The `settings.xml` file must be placed in the `.m2` directory in your home direc
 After successfully building the project (`mvn clean install`), you can run the game in two modes from your project's root directory:
 
 **Console version**
+
 To run the puzzle solver that uses the Breadth-First Search (BFS) algorithm to find a solution:
 
 ```bash
@@ -90,6 +91,7 @@ mvn exec:java -Dexec.mainClass="knightswap.ConsoleGame"
 ```
 
 **GUI version**
+
 To launch the graphical user interface and play the puzzle game interactively:
 
 ```bash
