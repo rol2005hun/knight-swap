@@ -103,8 +103,7 @@ public class ScoreBoardManager {
         }
         saveScores();
     }
-
-    // TODO: create leaderboard in chessboard.fxml
+    
     /**
      * Retrieves the top N player scores, sorted by best moves (ascending).
      *
