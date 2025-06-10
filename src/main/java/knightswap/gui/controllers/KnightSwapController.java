@@ -1,4 +1,4 @@
-package knightswap.gui;
+package knightswap.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +10,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
 import knightswap.data.ScoreBoardManager;
+import knightswap.gui.KnightSwapApplication;
 import org.tinylog.Logger;
 
 import knightswap.KnightSwapState;

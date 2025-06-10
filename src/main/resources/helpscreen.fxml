@@ -13,7 +13,7 @@
 <?import javafx.scene.text.TextFlow?>
 
 <AnchorPane prefWidth="400.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.HelpController">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.HelpController">
     <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #A0522D;">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>

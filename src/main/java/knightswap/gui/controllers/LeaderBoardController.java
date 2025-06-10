@@ -1,4 +1,4 @@
-package knightswap.gui;
+package knightswap.gui.controllers;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;

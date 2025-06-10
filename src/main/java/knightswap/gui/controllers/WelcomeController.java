@@ -1,8 +1,9 @@
-package knightswap.gui;
+package knightswap.gui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import knightswap.gui.KnightSwapApplication;
 import org.tinylog.Logger;
 
 /**

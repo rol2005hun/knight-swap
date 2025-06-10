@@ -1,4 +1,4 @@
-package knightswap.gui;
+package knightswap.gui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
