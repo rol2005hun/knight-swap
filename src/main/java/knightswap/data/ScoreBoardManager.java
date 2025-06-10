@@ -26,7 +26,7 @@ public class ScoreBoardManager {
     private static final Path SCORE_FILE_PATH = Paths.get("scores.json");
 
     private final Gson gson;
-    private List<PlayerScore> playerScores;
+    private static List<PlayerScore> playerScores;
 
     /**
      * Constructs a new ScoreBoardManager.
@@ -111,7 +111,7 @@ public class ScoreBoardManager {
      * @param limit The maximum number of top scores to retrieve.
      * @return A sorted list of {@link PlayerScore} objects.
      */
-    public List<PlayerScore> getTopScores(int limit) {
+    public static List<PlayerScore> getTopScores(int limit) {
         return playerScores.stream()
                 .sorted(Comparator.comparingInt(PlayerScore::getBestScore))
                 .limit(limit)

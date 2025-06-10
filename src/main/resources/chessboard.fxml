@@ -20,7 +20,7 @@
             <Button onAction="#showHelpScreen" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
                     text="Help"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
+            <Button onAction="#showLeaderBoard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;"
                     text="Leaderboard"/>
         </HBox>
 

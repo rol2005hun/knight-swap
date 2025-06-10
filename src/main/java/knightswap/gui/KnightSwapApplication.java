@@ -119,6 +119,30 @@ public class KnightSwapApplication extends Application {
         Logger.info("Help screen opened in a new window.");
     }
 
+    /**
+     * Loads and displays the leaderboard of the application.
+     * This screen allows the user to check their global rank.
+     *
+     * @throws IOException If the {@code leaderboard.fxml} file cannot be loaded.
+     */
+    public static void showLeaderBoard(Stage gameStageToReturnTo) throws IOException {
+        gameStageToReturnTo.hide();
+        Logger.info("Main game screen hidden to show the leaderboard.");
+
+        FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/leaderboard.fxml"));
+        Stage helpStage = new Stage();
+        Scene helpScene = new Scene(loader.load());
+
+        LeaderBoardController leaderBoardController = loader.getController();
+        leaderBoardController.setGameStage(gameStageToReturnTo);
+
+        helpStage.setTitle("Knight Swap - Leaderboard");
+        helpStage.setScene(helpScene);
+        helpStage.setResizable(false);
+        helpStage.show();
+        Logger.info("Help screen opened in a new window.");
+    }
+
     @Override
     public void stop() throws Exception {
         super.stop();

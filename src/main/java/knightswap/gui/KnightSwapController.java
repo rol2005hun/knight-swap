@@ -195,6 +195,11 @@ public class KnightSwapController {
         KnightSwapApplication.showHelpScreen(currentStage);
     }
 
+    public void showLeaderBoard(ActionEvent event) throws IOException {
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        KnightSwapApplication.showLeaderBoard(currentStage);
+    }
+
     /**
      * Resets the game board to its initial state.
      * Resets the current score to 0.

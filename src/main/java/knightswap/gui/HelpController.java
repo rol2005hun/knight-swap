@@ -55,7 +55,7 @@ public class HelpController implements Initializable {
     }
 
     @FXML
-    private void handleExitButton(ActionEvent event) {
+    private void handleCloseButton(ActionEvent event) {
         Stage helpStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         helpStage.close();
         Logger.info("Help screen closed.");
