@@ -173,7 +173,7 @@ public class KnightSwapController {
                         ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
                         if (manager != null) {
                             manager.addOrUpdatePlayerScore(playerName, movesMade);
-                            Logger.info("Score {} saved for player {}.", movesMade, playerName);
+                            updateScoreAndStatusLabels();
                         } else {
                             Logger.error("ScoreBoardManager is null, cannot save score for player {}.", playerName);
                         }
