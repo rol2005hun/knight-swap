@@ -8,23 +8,27 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="549.0" prefWidth="413.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.LeaderBoardController">
-    <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="700.0" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+<AnchorPane prefWidth="400.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.LeaderBoardController">
+    <VBox alignment="TOP_CENTER" prefHeight="495.0" prefWidth="391.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
         </padding>
-
-        <Label text="Leaderboard" textFill="WHITE">
-            <font>
-                <Font name="System Bold" size="30.0" />
-            </font>
-        </Label>
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Leaderboard" textFill="WHITE">
+                <font>
+                    <Font name="System Bold" size="30.0" />
+                </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleCloseButton" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-background-color: #DEB887; -fx-text-fill: #A0522D;" text="Close" />
+        </HBox>
         <Separator prefWidth="200.0" style="-fx-background-color: #DEB887;" />
 
-        <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #FFF8DC; -fx-padding: 15; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #DEB887; -fx-border-width: 3;" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" prefWidth="381.0" style="-fx-background-color: #FFF8DC; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #DEB887; -fx-border-width: 3; -fx-padding: 5;" VBox.vgrow="ALWAYS">
             <TableView fx:id="leaderboardTable" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="rankColumn" prefWidth="50.0" text="Rank" />
@@ -36,16 +40,5 @@
                 </columnResizePolicy>
             </TableView>
         </VBox>
-
-        <HBox alignment="CENTER" spacing="30.0">
-            <VBox.margin>
-                <Insets top="20.0" />
-            </VBox.margin>
-        </HBox>
-         <Button onAction="#handleCloseButton" style="-fx-background-color: #DEB887; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;" text="Close">
-             <padding>
-            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-         </padding>
-         </Button>
     </VBox>
 </AnchorPane>

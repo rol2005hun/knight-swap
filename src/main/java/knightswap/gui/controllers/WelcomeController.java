@@ -1,7 +1,6 @@
 package knightswap.gui.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import knightswap.gui.KnightSwapApplication;
 import org.tinylog.Logger;
@@ -13,7 +12,6 @@ import org.tinylog.Logger;
  */
 public class WelcomeController {
     @FXML private TextField playerNameTextField;
-    @FXML private Button startGameButton;
 
     /**
      * Default constructor for the WelcomeController.
@@ -22,23 +20,27 @@ public class WelcomeController {
     public WelcomeController() {}
 
     /**
-     * Initializes the controller after its root element has been completely processed.
-     * This method is automatically called by the FXML loader.
+     * Handles the action when the "Start Game" button is clicked.
+     * This method validates the player's name input. If the name is valid (not empty),
+     * it proceeds to show the main game screen, hiding the current welcome screen.
+     * If the name is empty, it updates the text field's prompt to indicate
+     * that a name is required.
      */
     @FXML
-    public void initialize() {
-        startGameButton.setOnAction(_ -> {
-            String playerName = playerNameTextField.getText().trim();
+    private void handleStartGameButton() {
+        String playerName = playerNameTextField.getText().trim();
 
-            if (!playerName.isEmpty()) {
-                try {
-                    KnightSwapApplication.showGameScreen(playerName);
-                } catch (Exception e) {
-                    Logger.error(e);
-                }
-            } else {
-                playerNameTextField.setPromptText("Name required!");
+        if (!playerName.isEmpty()) {
+            try {
+                // TODO: make more simple the stage saving with adding 2nd parameter to showGameScreen
+                // Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                KnightSwapApplication.showGameScreen(playerName);
+            } catch (Exception e) {
+                Logger.error("Failed to start game: {}", e.getMessage());
             }
-        });
+        } else {
+            playerNameTextField.setPromptText("Name required!");
+            Logger.warn("Player tried to start game with empty name.");
+        }
     }
 }
