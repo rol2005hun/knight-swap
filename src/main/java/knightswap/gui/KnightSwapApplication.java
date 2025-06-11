@@ -16,7 +16,9 @@ import java.io.IOException;
 /**
  * The main application class for the Knight Swap GUI game.
  * This class extends {@link javafx.application.Application} and is responsible for
- * initializing and displaying the game's user interface.
+ * initializing and displaying the game's user interface. It acts as the central
+ * orchestrator for scene management and provides access to shared resources like
+ * the {@link ScoreBoardManager}.
  */
 public class KnightSwapApplication extends Application {
     private static ScoreBoardManager scoreBoardManager;
@@ -24,16 +26,18 @@ public class KnightSwapApplication extends Application {
 
     /**
      * Default constructor for the KnightSwapApplication.
-     * This class is typically instantiated by the JavaFX runtime.
+     * This constructor is automatically called by the JavaFX runtime
+     * when the application is launched.
      */
     public KnightSwapApplication() {}
 
     /**
-     * Returns the singleton instance of the ScoreBoardManager.
+     * Returns the singleton instance of the {@link ScoreBoardManager}.
      * If the instance does not exist yet, it creates and initializes it.
-     * This method ensures that only one instance of ScoreBoardManager is ever created (Singleton pattern).
+     * This method ensures that only one instance of {@link ScoreBoardManager} is ever created (Singleton pattern),
+     * providing a centralized point for managing game scores.
      *
-     * @return The single instance of ScoreBoardManager.
+     * @return The single instance of {@link ScoreBoardManager}.
      */
     public static ScoreBoardManager getScoreBoardManager() {
         if (scoreBoardManager == null) {
@@ -44,14 +48,15 @@ public class KnightSwapApplication extends Application {
     }
 
     /**
-     * The entry point for the JavaFX application. This method is called after the
-     * system is ready for the application to begin. It loads the FXML file for
-     * the chessboard, sets up the primary stage, and displays the game window.
+     * The entry point for the JavaFX application. This method is called by the
+     * JavaFX runtime after the system is ready for the application to begin.
+     * It sets up the primary stage, applies the application icon, and displays
+     * the initial welcome screen.
      *
      * @param stage The primary stage for this application, onto which
-     * the application scene can be set. The stage is provided by the
+     * the application scene can be set. This stage is provided by the
      * JavaFX runtime.
-     * @throws IOException If the {@code welcomescreen.fxml or chessboard.fxml} file cannot be loaded.
+     * @throws IOException If the {@code welcomescreen.fxml} file cannot be loaded.
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -63,10 +68,10 @@ public class KnightSwapApplication extends Application {
     }
 
     /**
-     * Loads and displays the welcome screen of the application.
-     * This screen allows for the user to enter his name, and after start the game.
+     * Loads and displays the welcome screen of the application on the primary stage.
+     * This screen allows the user to enter their name before starting the game.
      *
-     * @throws IOException If the {@code welcomescreen.fxml} file cannot be loaded.
+     * @throws IOException If the {@code /welcomescreen.fxml} file cannot be loaded from resources.
      */
     public static void showWelcomeScreen() throws IOException {
         FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/welcomescreen.fxml"));
@@ -81,11 +86,11 @@ public class KnightSwapApplication extends Application {
     }
 
     /**
-     * Loads and displays the welcome screen of the application.
-     * This screen allows for the user to play the puzzle game.
+     * Loads and displays the main game screen (chessboard) of the application on the primary stage.
+     * This method sets the player's name and initializes the game UI.
      *
-     * @param playerName The player's name, who runs the application.
-     * @throws IOException If the {@code chessboard.fxml} file cannot be loaded.
+     * @param playerName The name of the player who is starting the game.
+     * @throws IOException If the {@code /chessboard.fxml} file cannot be loaded from resources.
      */
     public static void showGameScreen(String playerName) throws IOException {
         KnightSwapController.setPlayerName(playerName);
@@ -103,10 +108,13 @@ public class KnightSwapApplication extends Application {
     }
 
     /**
-     * Loads and displays the help screen of the application.
-     * This screen allows for the user to get some help for solving the puzzle.
+     * Loads and displays the help screen of the application in a new dedicated window.
+     * The main game screen is hidden temporarily to give focus to the help screen.
+     * The {@link HelpController} is configured to re-show the game stage upon closing the help screen.
      *
-     * @throws IOException If the {@code helpscreen.fxml} file cannot be loaded.
+     * @param gameStageToReturnTo The {@link javafx.stage.Stage} of the currently active game screen,
+     * which will be hidden and then re-shown when the help screen is closed.
+     * @throws IOException If the {@code /helpscreen.fxml} file cannot be loaded from resources.
      */
     public static void showHelpScreen(Stage gameStageToReturnTo) throws IOException {
         gameStageToReturnTo.hide();
@@ -129,10 +137,13 @@ public class KnightSwapApplication extends Application {
     }
 
     /**
-     * Loads and displays the leaderboard of the application.
-     * This screen allows the user to check their global rank.
+     * Loads and displays the leaderboard screen of the application in a new dedicated window.
+     * The main game screen is hidden temporarily to give focus to the leaderboard.
+     * The {@link LeaderBoardController} is configured to re-show the game stage upon closing the leaderboard.
      *
-     * @throws IOException If the {@code leaderboard.fxml} file cannot be loaded.
+     * @param gameStageToReturnTo The {@link javafx.stage.Stage} of the currently active game screen,
+     * which will be hidden and then re-shown when the leaderboard is closed.
+     * @throws IOException If the {@code /leaderboard.fxml} file cannot be loaded from resources.
      */
     public static void showLeaderBoard(Stage gameStageToReturnTo) throws IOException {
         gameStageToReturnTo.hide();
@@ -154,6 +165,13 @@ public class KnightSwapApplication extends Application {
         Logger.info("Help screen opened in a new window.");
     }
 
+    /**
+     * This method is called when the application is stopped, either by the user
+     * closing the window or by the system shutting down. It ensures that the
+     * game scores are saved before the application fully exits.
+     *
+     * @throws Exception If an error occurs during the shutdown process or score saving.
+     */
     @Override
     public void stop() throws Exception {
         super.stop();

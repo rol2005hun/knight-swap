@@ -67,7 +67,6 @@ public class ScoreBoardManager {
      */
     public void saveScores() {
         try {
-            //Files.createDirectories(SCORE_FILE_PATH.getParent());
             try (FileWriter writer = new FileWriter(SCORE_FILE_PATH.toFile())) {
                 gson.toJson(playerScores, writer);
                 Logger.info("Saved {} player scores to {}", playerScores.size(), SCORE_FILE_PATH);

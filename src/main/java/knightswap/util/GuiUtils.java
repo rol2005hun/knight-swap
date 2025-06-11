@@ -10,11 +10,32 @@ import org.tinylog.Logger;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Utility class providing common helper methods for JavaFX GUI operations
+ * within the Knight Swap application. This includes functionalities such as
+ * loading fallback game screens and setting application icons.
+ * <p>
+ * This class is designed to be static, meaning all its methods can be called
+ * directly using the class name (e.g., {@code GuiUtils.setStageIcon(...)})
+ * without needing to create an instance of {@code GuiUtils}.
+ * </p>
+ * <p>
+ * It helps in maintaining a clean separation of concerns by abstracting away
+ * common UI boilerplate logic from the main application flow and controllers.
+ * </p>
+ */
 public class GuiUtils {
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     * All methods in this class are static and are meant to be called directly
+     * via the class name.
+     */
+    private GuiUtils() {}
 
     /**
      * Attempts to load and display the main game screen (chessboard.fxml) as a fallback,
      * if a direct return to a parent Stage is not possible (e.g., the parent Stage is null).
+     * This should never happen!
      *
      @param callingClass The class from which this method was called (used for resource loading).
      */

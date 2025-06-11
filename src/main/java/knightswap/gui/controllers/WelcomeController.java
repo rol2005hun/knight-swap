@@ -32,8 +32,6 @@ public class WelcomeController {
 
         if (!playerName.isEmpty()) {
             try {
-                // TODO: make more simple the stage saving with adding 2nd parameter to showGameScreen
-                // Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 KnightSwapApplication.showGameScreen(playerName);
             } catch (Exception e) {
                 Logger.error("Failed to start game: {}", e.getMessage());
