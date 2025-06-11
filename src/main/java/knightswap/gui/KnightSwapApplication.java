@@ -3,16 +3,15 @@ package knightswap.gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import knightswap.data.ScoreBoardManager;
 import knightswap.gui.controllers.HelpController;
 import knightswap.gui.controllers.KnightSwapController;
 import knightswap.gui.controllers.LeaderBoardController;
+import knightswap.util.GuiUtils;
 import org.tinylog.Logger;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * The main application class for the Knight Swap GUI game.
@@ -58,16 +57,7 @@ public class KnightSwapApplication extends Application {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
 
-        try {
-            Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/logo.png")));
-            stage.getIcons().add(icon);
-            Logger.info("Application icon set successfully.");
-        } catch (NullPointerException e) {
-            Logger.error("ERROR: Application icon 'logo.png' not found." +
-                    "Please verify the icon file's path and your build configuration.");
-        } catch (Exception e) {
-            Logger.error("Failed to load application icon: {}", e.getMessage());
-        }
+        GuiUtils.setStageIcon(stage, getClass());
 
         showWelcomeScreen();
     }
@@ -126,6 +116,8 @@ public class KnightSwapApplication extends Application {
         Stage helpStage = new Stage();
         Scene helpScene = new Scene(loader.load());
 
+        GuiUtils.setStageIcon(helpStage, KnightSwapApplication.class);
+
         HelpController helpController = loader.getController();
         helpController.setGameStage(gameStageToReturnTo);
 
@@ -149,6 +141,8 @@ public class KnightSwapApplication extends Application {
         FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/leaderboard.fxml"));
         Stage helpStage = new Stage();
         Scene helpScene = new Scene(loader.load());
+
+        GuiUtils.setStageIcon(helpStage, KnightSwapApplication.class);
 
         LeaderBoardController leaderBoardController = loader.getController();
         leaderBoardController.setGameStage(gameStageToReturnTo);
