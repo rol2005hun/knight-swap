@@ -1,8 +1,12 @@
 package knightswap.util;
 
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.tinylog.Logger;
@@ -81,5 +85,29 @@ public class GuiUtils {
         } catch (Exception e) {
             Logger.error("Failed to load application icon at resources folder: {}", e.getMessage());
         }
+    }
+
+    /**
+     * Sets a {@link javafx.scene.control.TableCell} factory for the given {@link TableColumn}
+     * that centers the text content within each cell. This method is generic and can be
+     * applied to any column type.
+     *
+     * @param <S> The type of the items in the {@link TableView} (e.g., PlayerScore).
+     * @param <T> The type of the value in the {@link TableColumn} (e.g., String, Integer).
+     * @param column The {@link TableColumn} to which the centered cell factory should be applied.
+     */
+    public static <S, T> void setCenteredCellFactory(TableColumn<S, T> column) {
+        column.setCellFactory(_ -> new TableCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
     }
 }

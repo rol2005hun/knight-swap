@@ -88,8 +88,14 @@ public class LeaderBoardController {
             }
             return new ReadOnlyObjectWrapper<>(0);
         });
+        GuiUtils.setCenteredCellFactory(rankColumn);
+
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("playerName"));
+        GuiUtils.setCenteredCellFactory(nameColumn);
+
+
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("bestScore"));
+        GuiUtils.setCenteredCellFactory(scoreColumn);
 
         leaderboardTable.getSortOrder().add(scoreColumn);
         scoreColumn.setSortType(TableColumn.SortType.ASCENDING);

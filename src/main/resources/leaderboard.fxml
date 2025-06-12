@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefWidth="400.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.LeaderBoardController">
+<AnchorPane prefWidth="300.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.LeaderBoardController">
     <VBox alignment="TOP_CENTER" prefHeight="495.0" prefWidth="391.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -31,9 +31,9 @@
         <VBox alignment="CENTER" prefWidth="381.0" style="-fx-background-color: #FFF8DC; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #DEB887; -fx-border-width: 3; -fx-padding: 5;" VBox.vgrow="ALWAYS">
             <TableView fx:id="leaderboardTable" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="rankColumn" prefWidth="50.0" text="Rank" />
-                    <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Player" />
-                    <TableColumn fx:id="scoreColumn" prefWidth="50.0" text="Best score" />
+                    <TableColumn fx:id="rankColumn" prefWidth="15.0" text="Rank" />
+                    <TableColumn fx:id="nameColumn" prefWidth="40.0" text="Player" />
+                    <TableColumn fx:id="scoreColumn" prefWidth="25.0" text="Best score" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
