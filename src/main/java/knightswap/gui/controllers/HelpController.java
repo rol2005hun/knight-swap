@@ -76,7 +76,8 @@ public class HelpController implements Initializable {
             (2, 0) -> (0, 1)
             (1, 1) -> (3, 2)
         """;
-        solutionStepsTextArea.setText(solution.trim());
+
+        solutionStepsTextArea.setText(solution.stripIndent().indent(0));
     }
 
     /**

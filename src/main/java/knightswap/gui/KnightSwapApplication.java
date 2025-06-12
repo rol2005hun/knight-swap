@@ -77,7 +77,7 @@ public class KnightSwapApplication extends Application {
         FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/welcomescreen.fxml"));
         Scene scene = new Scene(loader.load());
 
-        primaryStage.setTitle("Knight Swap - Welcome");
+        primaryStage.setTitle("Welcome!");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -162,7 +162,7 @@ public class KnightSwapApplication extends Application {
         helpStage.setScene(helpScene);
         helpStage.setResizable(false);
         helpStage.show();
-        Logger.info("Help screen opened in a new window.");
+        Logger.info("Leaderboard opened in a new window.");
     }
 
     /**

@@ -21,6 +21,7 @@
             <Region HBox.hgrow="ALWAYS" />
             <Button onAction="#showLeaderBoard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;" text="Leaderboard" />
         </HBox>
+      <Separator style="-fx-padding: 0 10 0 10;" />
 
         <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 0 10 10 10;">
             <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Current Score:" textFill="WHITE" />
@@ -76,5 +77,4 @@
 
         </GridPane>
     </VBox>
-   <Separator layoutX="14.0" layoutY="54.0" prefHeight="25.0" prefWidth="335.0" />
 </AnchorPane>

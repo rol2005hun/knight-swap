@@ -10,12 +10,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="370.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.WelcomeController">
+<AnchorPane prefHeight="402.0" prefWidth="257.0" style="-fx-background-color: #A0522D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="knightswap.gui.controllers.WelcomeController">
     <VBox alignment="CENTER" layoutX="189.0" prefHeight="400.0" prefWidth="410.0" spacing="20.0" style="-fx-background-color: #A0522D;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <ImageView fitHeight="116.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView fitHeight="147.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@logo.png" />
         </ImageView>
-        <Label contentDisplay="RIGHT" style="-fx-wrap-text: true; -fx-alignment: center;" text="Knight Swap Game" textAlignment="CENTER" textFill="WHITE">
+        <Label contentDisplay="RIGHT" style="-fx-wrap-text: true; -fx-alignment: center;" text="Knight Swap" textAlignment="CENTER" textFill="WHITE">
             <font>
                 <Font name="System Bold" size="36.0" />
             </font>
