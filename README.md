@@ -87,8 +87,6 @@ If the move you attempt is legal, the knight will be placed at the destination. 
 
 ## Solution Steps
 
-This section provides a sequential list of moves to solve the Knight Swap puzzle. Each step describes a single knight movement from a starting square to a target square.
-
 **Understanding the Move Format:**
 `Step_Number. (Starting_Row, Starting_Column) -> (Target_Row, Target_Column)`
 

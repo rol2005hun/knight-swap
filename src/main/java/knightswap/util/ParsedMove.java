@@ -5,5 +5,4 @@ package knightswap.util;
  * @param start the starting position of the move
  * @param end the ending position of the move
  */
-public record ParsedMove(Position start, Position end) {
-}
+public record ParsedMove(Position start, Position end) {}
