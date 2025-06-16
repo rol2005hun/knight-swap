@@ -91,7 +91,7 @@ public class KnightSwapController {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 3; col++) {
                 Button btn = buttons[row][col];
-                btn.setFont(Font.font(45));
+                btn.setFont(Font.font("Segoe UI Symbol", 45));
 
                 btn.setOnAction(this::handleButtonClick);
 
