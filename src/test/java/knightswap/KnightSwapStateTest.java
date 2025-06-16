@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,28 +23,50 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void getPieceAt() {
-        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 0), "Dark knight at (0,0).");
-        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 1), "Dark knight at (0,1).");
-        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 2), "Dark knight at (0,2).");
+    void testInitialBoardSetup() {
+        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 0));
+        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 1));
+        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 2));
 
-        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 0), "Light knight at (3,0).");
-        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 1), "Light knight at (3,1).");
-        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 2), "Light knight at (3,2).");
+        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 0));
+        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 1));
+        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 2));
 
-        assertEquals('.', initialState.getPieceAt(1, 0), "Empty at (1,0).");
-        assertEquals('.', initialState.getPieceAt(2, 2), "Empty at (2,2).");
-
-        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(-1, 0), "Should throw for negative row.");
-        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(4, 0), "Should throw for row too high.");
-        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(0, -1), "Should throw for negative col.");
-        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(0, 3), "Should throw for col too high.");
+        assertEquals('.', initialState.getPieceAt(1, 0));
+        assertEquals('.', initialState.getPieceAt(1, 1));
+        assertEquals('.', initialState.getPieceAt(1, 2));
+        assertEquals('.', initialState.getPieceAt(2, 0));
+        assertEquals('.', initialState.getPieceAt(2, 1));
+        assertEquals('.', initialState.getPieceAt(2, 2));
     }
 
     @Test
-    void isSolved() {
-        assertFalse(initialState.isSolved(), "Initial state should not be solved.");
+    void testInitialCurrentPlayer() {
+        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
+    }
 
+    @Test
+    void testGetPieceAtValidCoordinates() {
+        assertEquals(PieceType.DARK.getSymbol(), initialState.getPieceAt(0, 0));
+        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(3, 1));
+        assertEquals('.', initialState.getPieceAt(1, 2));
+    }
+
+    @Test
+    void testGetPieceAtOutOfBounds() {
+        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(-1, 0));
+        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(4, 0));
+        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(0, -1));
+        assertThrows(IllegalArgumentException.class, () -> initialState.getPieceAt(0, 3));
+    }
+
+    @Test
+    void testIsSolvedInitialState() {
+        assertFalse(initialState.isSolved());
+    }
+
+    @Test
+    void testIsSolvedCorrectlySolvedState() {
         KnightSwapState solvedState = new KnightSwapState();
         for (int i = 0; i < 4; i++) {
             Arrays.fill(solvedState.board[i], '.');
@@ -55,49 +78,123 @@ class KnightSwapStateTest {
         solvedState.board[3][1] = PieceType.DARK.getSymbol();
         solvedState.board[3][2] = PieceType.DARK.getSymbol();
 
-        assertTrue(solvedState.isSolved(), "Manually created solved state should be identified as solved.");
-
-        KnightSwapState partialSolvedState = new KnightSwapState();
-        for (int i = 0; i < 4; i++) {
-            Arrays.fill(partialSolvedState.board[i], '.');
-        }
-        partialSolvedState.board[3][0] = PieceType.DARK.getSymbol();
-        partialSolvedState.board[3][1] = PieceType.DARK.getSymbol();
-        partialSolvedState.board[3][2] = PieceType.DARK.getSymbol();
-        partialSolvedState.board[0][0] = PieceType.DARK.getSymbol();
-        assertFalse(partialSolvedState.isSolved(), "Partially solved state should not be solved.");
+        assertTrue(solvedState.isSolved());
     }
 
     @Test
-    void getLegalMoves() {
-        Set<String> expectedMoves = new HashSet<>();
+    void testIsSolvedPartiallySolvedState() {
+        KnightSwapState partialSolvedState = new KnightSwapState();
+        partialSolvedState.board[0][0] = PieceType.LIGHT.getSymbol();
+        partialSolvedState.board[3][0] = PieceType.DARK.getSymbol();
 
+        assertFalse(partialSolvedState.isSolved());
+
+        KnightSwapState onlyDarkSolved = new KnightSwapState();
+        for (int i = 0; i < 4; i++) {
+            Arrays.fill(onlyDarkSolved.board[i], '.');
+        }
+        onlyDarkSolved.board[3][0] = PieceType.DARK.getSymbol();
+        onlyDarkSolved.board[3][1] = PieceType.DARK.getSymbol();
+        onlyDarkSolved.board[3][2] = PieceType.DARK.getSymbol();
+        onlyDarkSolved.board[0][0] = PieceType.LIGHT.getSymbol();
+        assertFalse(onlyDarkSolved.isSolved());
+    }
+
+    @Test
+    void testGetLegalMovesInitialState() {
+        Set<String> expectedMoves = new HashSet<>();
         expectedMoves.add("3 0 1 1");
         expectedMoves.add("3 2 1 1");
-        assertEquals(expectedMoves, initialState.getLegalMoves(), "Initial state should have specific legal moves for Light player.");
+
+        assertEquals(expectedMoves, initialState.getLegalMoves());
+    }
+
+    @Test
+    void testGetLegalMovesAfterOneMove() {
+        initialState.makeMove("3 0 1 1");
+        Set<String> expectedMoves = new HashSet<>();
+
+        expectedMoves.add("0 0 2 1");
+        expectedMoves.add("0 1 2 2");
+        expectedMoves.add("0 2 2 1");
+
+        assertEquals(expectedMoves.size(), initialState.getLegalMoves().size());
+        assertTrue(initialState.getLegalMoves().containsAll(expectedMoves));
+        assertTrue(expectedMoves.containsAll(initialState.getLegalMoves()));
     }
 
     @Test
     void testClone() {
         KnightSwapState clonedState = (KnightSwapState) initialState.clone();
 
-        assertNotSame(initialState, clonedState, "Cloned object should not be the same instance.");
-        assertEquals(initialState.toString(), clonedState.toString(), "Cloned state's string representation should be identical.");
-        assertEquals(initialState.getCurrentPlayer(), clonedState.getCurrentPlayer(), "Cloned state should have the same current player.");
+        assertNotSame(initialState, clonedState);
+        assertNotSame(initialState.board, clonedState.board);
+        assertTrue(Arrays.deepEquals(initialState.board, clonedState.board));
+        assertEquals(initialState.getCurrentPlayer(), clonedState.getCurrentPlayer());
 
         clonedState.board[0][0] = '.';
-        assertNotEquals(clonedState.getPieceAt(0,0), initialState.getPieceAt(0,0), "Modifying clone should not affect original board.");
+        assertNotEquals(clonedState.getPieceAt(0, 0), initialState.getPieceAt(0, 0));
     }
 
     @Test
-    void isLegalMove() {
-        assertTrue(initialState.isLegalMove("3 0 1 1"), "isLegalMove should return true.");
-        assertFalse(initialState.isLegalMove("0 0 1 2"), "isLegalMove should return false.");
+    void testIsLegalMoveValidInitialMoves() {
+        assertTrue(initialState.isLegalMove("3 0 1 1"));
+        assertTrue(initialState.isLegalMove("3 2 1 1"));
     }
 
     @Test
-    void makeMove() {
-        initialState.makeMove("3 0 1 1");
+    void testIsLegalMoveOpponentPiece() {
+        assertFalse(initialState.isLegalMove("0 0 1 2"));
+    }
+
+    @Test
+    void testIsLegalMoveEmptySquare() {
+        assertFalse(initialState.isLegalMove("1 0 3 1"));
+    }
+
+    @Test
+    void testIsLegalMoveToOccupiedSquare() {
+        assertFalse(initialState.isLegalMove("3 0 3 1"));
+    }
+
+    @Test
+    void testIsLegalMoveNotKnightMove() {
+        assertFalse(initialState.isLegalMove("3 0 2 0"));
+        assertFalse(initialState.isLegalMove("3 0 2 1"));
+    }
+
+    @Test
+    void testIsLegalMoveTargetAttacked() {
+        KnightSwapState stateForAttackTest = new KnightSwapState();
+        for (int r = 0; r < 4; r++) Arrays.fill(stateForAttackTest.board[r], '.');
+        stateForAttackTest.board[0][0] = PieceType.DARK.getSymbol();
+        stateForAttackTest.board[3][0] = PieceType.LIGHT.getSymbol();
+
+        assertFalse(stateForAttackTest.isLegalMove("3 0 2 1"));
+    }
+
+    @Test
+    void testIsLegalMoveInvalidFormat() {
+        assertFalse(initialState.isLegalMove("3 0 1"));
+        assertFalse(initialState.isLegalMove("3 0 1 1 5"));
+        assertFalse(initialState.isLegalMove("A 0 1 1"));
+        assertFalse(initialState.isLegalMove("3 0 1 Z"));
+    }
+
+    @Test
+    void testIsLegalMoveOutOfBoundsCoordinatesInString() {
+        assertFalse(initialState.isLegalMove("-1 0 1 1"));
+        assertFalse(initialState.isLegalMove("3 0 5 1"));
+    }
+
+    @Test
+    void testMakeMoveLegalMove() {
+        String move = "3 0 1 1";
+        initialState.makeMove(move);
+
+        assertEquals('.', initialState.getPieceAt(3, 0));
+        assertEquals(PieceType.LIGHT.getSymbol(), initialState.getPieceAt(1, 1));
+        assertEquals(PieceType.DARK, initialState.getCurrentPlayer());
 
         String expectedBoardString = """
                 Current turn: DARK
@@ -107,41 +204,70 @@ class KnightSwapStateTest {
                 . . .\s
                 . L L\s
                 """;
-
-        assertEquals(expectedBoardString, initialState.toString(), "Board state should reflect the executed move.");
-        assertEquals(PieceType.DARK, initialState.getCurrentPlayer(), "Current player should switch to DARK after the move.");
+        assertEquals(expectedBoardString, initialState.toString());
     }
 
     @Test
-    void testEquals() {
+    void testMakeMoveIllegalMove() {
+        String illegalMove = "0 0 1 2";
+
+        assertThrows(IllegalArgumentException.class, () -> initialState.makeMove(illegalMove), "makeMove should throw IllegalArgumentException for an illegal move.");
+
+        KnightSwapState stateBeforeIllegalMove = (KnightSwapState) initialState.clone();
+
+        try {
+            initialState.makeMove(illegalMove);
+            fail("makeMove did not throw IllegalArgumentException for illegal move: " + illegalMove);
+        } catch (IllegalArgumentException e) {
+            assertEquals(stateBeforeIllegalMove, initialState, "State should remain unchanged after an illegal move attempt.");
+        }
+    }
+
+    @Test
+    void testEqualsIdenticalStates() {
         KnightSwapState otherState = new KnightSwapState();
-        assertEquals(initialState, otherState, "Initial state should be equal to another freshly created state.");
-        assertEquals(initialState.hashCode(), otherState.hashCode(), "Equal objects must have equal hash codes.");
-
-        initialState.board[0][0] = '.';
-        assertNotEquals(initialState, otherState, "States should be unequal after modification.");
-        assertNotEquals(initialState.hashCode(), otherState.hashCode(), "Unequal objects should have different hash codes.");
-
-        assertNotEquals(null, initialState, "State should not be equal to null.");
-
-        assertNotEquals(new Object(), initialState, "State should not be equal to an object of different class.");
+        assertEquals(initialState, otherState);
     }
 
     @Test
-    void testHashCode() {
+    void testEqualsDifferentBoardStates() {
         KnightSwapState otherState = new KnightSwapState();
-        assertEquals(initialState.hashCode(), otherState.hashCode(), "Fresh states should have same hash code.");
-
-        initialState.board[0][0] = '.';
-        assertNotEquals(initialState.hashCode(), otherState.hashCode(), "States with different boards should have different hash codes.");
-
-        KnightSwapState clonedState = (KnightSwapState) otherState.clone();
-        clonedState.board[0][0] = '.';
-        assertEquals(initialState.hashCode(), clonedState.hashCode(), "States with identical configurations should have same hash code.");
+        otherState.board[0][0] = '.';
+        assertNotEquals(initialState, otherState);
     }
 
     @Test
-    void testToString() {
+    void testEqualsDifferentPlayers() {
+        KnightSwapState otherState = new KnightSwapState();
+        initialState.makeMove("3 0 1 1");
+        assertNotEquals(initialState, otherState);
+    }
+
+    @Test
+    void testEqualsNullAndDifferentClass() {
+        assertNotEquals(null, initialState);
+        assertNotEquals(new Object(), initialState);
+    }
+
+    @Test
+    void testHashCodeConsistency() {
+        KnightSwapState otherState = new KnightSwapState();
+        assertEquals(initialState.hashCode(), otherState.hashCode());
+
+        initialState.makeMove("3 0 1 1");
+        KnightSwapState stateAfterMove = (KnightSwapState) initialState.clone();
+        assertEquals(initialState.hashCode(), stateAfterMove.hashCode());
+    }
+
+    @Test
+    void testHashCodeDifference() {
+        KnightSwapState otherState = new KnightSwapState();
+        otherState.board[0][0] = '.';
+        assertNotEquals(initialState.hashCode(), otherState.hashCode());
+    }
+
+    @Test
+    void testToStringInitialState() {
         String expectedInitialString = """
                 Current turn: LIGHT
                 Board:
@@ -150,8 +276,11 @@ class KnightSwapStateTest {
                 . . .\s
                 L L L\s
                 """;
-        assertEquals(expectedInitialString, initialState.toString(), "Initial state toString should match expected.");
+        assertEquals(expectedInitialString, initialState.toString());
+    }
 
+    @Test
+    void testToStringAfterMove() {
         initialState.makeMove("3 0 1 1");
         String expectedAfterMoveString = """
                 Current turn: DARK
@@ -161,41 +290,96 @@ class KnightSwapStateTest {
                 . . .\s
                 . L L\s
                 """;
-        assertEquals(expectedAfterMoveString, initialState.toString(), "State after move toString should match expected.");
+        assertEquals(expectedAfterMoveString, initialState.toString());
     }
 
     @Test
-    void getCurrentPlayer() {
-        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Initial player should be LIGHT.");
+    void testGetCurrentPlayer() {
+        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
         initialState.makeMove("3 0 1 1");
-        assertEquals(PieceType.DARK, initialState.getCurrentPlayer(), "Player should switch to DARK after move.");
+        assertEquals(PieceType.DARK, initialState.getCurrentPlayer());
         initialState.makeMove("0 0 2 1");
-        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer(), "Player should switch back to LIGHT after another move.");
+        assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
     }
 
     @Test
-    void parseMoveString() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        java.lang.reflect.Method method = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
-        method.setAccessible(true);
+    void testParseMoveStringValid() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method parseMethod = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
+        parseMethod.setAccessible(true);
 
-        ParsedMove validMove = (ParsedMove) method.invoke(initialState, "0 0 1 2");
-        assertNotNull(validMove, "Valid move string should be parsed successfully.");
-        assertEquals(new Position(0, 0), validMove.start(), "Start position should match.");
-        assertEquals(new Position(1, 2), validMove.end(), "End position should match.");
+        ParsedMove validMove = (ParsedMove) parseMethod.invoke(initialState, "0 0 1 2");
+        assertNotNull(validMove);
+        assertEquals(new Position(0, 0), validMove.start());
+        assertEquals(new Position(1, 2), validMove.end());
 
-        assertNull(method.invoke(initialState, "0 0 1"), "Invalid move string (too few parts) should return null.");
-        assertNull(method.invoke(initialState, "0 0 1 2 3"), "Invalid move string (too many parts) should return .");
+        validMove = (ParsedMove) parseMethod.invoke(initialState, "3 2 1 1");
+        assertNotNull(validMove);
+        assertEquals(new Position(3, 2), validMove.start());
+        assertEquals(new Position(1, 1), validMove.end());
+    }
 
-        assertNull(method.invoke(initialState, "A 0 1 2"), "Move string with non-integer parts should return null.");
-        assertNull(method.invoke(initialState, "0 0 B 2"), "Move string with non-integer parts should return null.");
+    @Test
+    void testParseMoveStringInvalidFormat() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method parseMethod = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
+        parseMethod.setAccessible(true);
 
-        assertNull(method.invoke(initialState, "-1 0 1 2"), "Out-of-bounds start row should return null.");
-        assertNull(method.invoke(initialState, "0 -1 1 2"), "Out-of-bounds start col should return null.");
-        assertNull(method.invoke(initialState, "4 0 1 2"), "Out-of-bounds start row (too high) should return null.");
-        assertNull(method.invoke(initialState, "0 3 1 2"), "Out-of-bounds start col (too high) should return null.");
-        assertNull(method.invoke(initialState, "0 0 -1 2"), "Out-of-bounds end row should return null.");
-        assertNull(method.invoke(initialState, "0 0 1 -1"), "Out-of-bounds end col should return null.");
-        assertNull(method.invoke(initialState, "0 0 4 2"), "Out-of-bounds end row (too high) should return null.");
-        assertNull(method.invoke(initialState, "0 0 1 3"), "Out-of-bounds end col (too high) should return null.");
+        assertNull(parseMethod.invoke(initialState, "0 0 1"));
+        assertNull(parseMethod.invoke(initialState, "0 0 1 2 3"));
+        assertNull(parseMethod.invoke(initialState, "A 0 1 2"));
+        assertNull(parseMethod.invoke(initialState, "0 0 B 2"));
+        assertNull(parseMethod.invoke(initialState, "0.5 0 1 2"));
+    }
+
+    @Test
+    void testParseMoveStringOutOfBoundsCoordinates() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method parseMethod = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
+        parseMethod.setAccessible(true);
+
+        assertNull(parseMethod.invoke(initialState, "-1 0 1 2"));
+        assertNull(parseMethod.invoke(initialState, "0 -1 1 2"));
+        assertNull(parseMethod.invoke(initialState, "4 0 1 2"));
+        assertNull(parseMethod.invoke(initialState, "0 3 1 2"));
+        assertNull(parseMethod.invoke(initialState, "0 0 -1 2"));
+        assertNull(parseMethod.invoke(initialState, "0 0 1 -1"));
+        assertNull(parseMethod.invoke(initialState, "0 0 4 2"));
+        assertNull(parseMethod.invoke(initialState, "0 0 1 3"));
+    }
+
+    @Test
+    void testIsAttackedTrue() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method isAttackedMethod = KnightSwapState.class.getDeclaredMethod("isAttacked", Position.class, PieceType.class);
+        isAttackedMethod.setAccessible(true);
+
+        assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(1, 1), PieceType.DARK));
+
+        KnightSwapState stateForAttackTest = new KnightSwapState();
+        stateForAttackTest.board[0][0] = PieceType.DARK.getSymbol();
+        stateForAttackTest.board[2][1] = '.';
+        stateForAttackTest.board[3][0] = '.';
+
+        assertTrue((boolean) isAttackedMethod.invoke(stateForAttackTest, new Position(2, 1), PieceType.DARK));
+
+        KnightSwapState stateForLightAttackTest = new KnightSwapState();
+        stateForLightAttackTest.board[3][0] = PieceType.LIGHT.getSymbol();
+        stateForLightAttackTest.board[1][1] = '.';
+        stateForLightAttackTest.board[0][0] = '.';
+
+        assertTrue((boolean) isAttackedMethod.invoke(stateForLightAttackTest, new Position(1, 1), PieceType.LIGHT));
+    }
+
+    @Test
+    void testIsAttackedFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method isAttackedMethod = KnightSwapState.class.getDeclaredMethod("isAttacked", Position.class, PieceType.class);
+        isAttackedMethod.setAccessible(true);
+
+        assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(0, 0), PieceType.DARK));
+        assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(1, 1), PieceType.DARK));
+
+        KnightSwapState stateNoAttacker = new KnightSwapState();
+        stateNoAttacker.board[0][0] = '.';
+        stateNoAttacker.board[3][0] = PieceType.LIGHT.getSymbol();
+        System.out.println(stateNoAttacker);
+
+        assertFalse((boolean) isAttackedMethod.invoke(stateNoAttacker, new Position(1, 2), PieceType.DARK));
     }
 }
