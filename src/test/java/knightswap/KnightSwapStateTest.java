@@ -1,8 +1,8 @@
 package knightswap;
 
-import knightswap.util.ParsedMove;
-import knightswap.util.PieceType;
-import knightswap.util.Position;
+import knightswap.utils.ParsedMove;
+import knightswap.utils.PieceType;
+import knightswap.utils.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

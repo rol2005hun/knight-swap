@@ -1,4 +1,4 @@
-package knightswap.util;
+package knightswap.utils;
 
 /**
  * Represents the type of knight piece.

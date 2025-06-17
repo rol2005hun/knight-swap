@@ -1,4 +1,4 @@
-package knightswap.util;
+package knightswap.utils;
 
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;

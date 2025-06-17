@@ -8,7 +8,7 @@ import knightswap.data.ScoreBoardManager;
 import knightswap.gui.controllers.HelpController;
 import knightswap.gui.controllers.KnightSwapController;
 import knightswap.gui.controllers.LeaderBoardController;
-import knightswap.util.GuiUtils;
+import knightswap.utils.GuiUtils;
 import org.tinylog.Logger;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package knightswap.util;
+package knightswap.utils;
 
 /**
  * Represents a position on the chessboard with row and column coordinates.

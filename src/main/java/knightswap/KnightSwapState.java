@@ -8,9 +8,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import knightswap.util.PieceType;
-import knightswap.util.Position;
-import knightswap.util.ParsedMove;
+import knightswap.utils.PieceType;
+import knightswap.utils.Position;
+import knightswap.utils.ParsedMove;
 
 /**
  * Represents the state of the KnightSwap puzzle game.

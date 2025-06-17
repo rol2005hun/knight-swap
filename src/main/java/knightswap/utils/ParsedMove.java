@@ -1,4 +1,4 @@
-package knightswap.util;
+package knightswap.utils;
 
 /**
  * A helper class that stores the start and end positions of a move.

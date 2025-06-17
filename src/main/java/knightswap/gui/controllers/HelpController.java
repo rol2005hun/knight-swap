@@ -6,7 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.event.ActionEvent;
-import knightswap.util.GuiUtils;
+import knightswap.utils.GuiUtils;
 import org.tinylog.Logger;
 
 import java.net.URL;

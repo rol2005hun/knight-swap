@@ -12,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
 import knightswap.data.ScoreBoardManager;
-import knightswap.util.GuiUtils;
+import knightswap.utils.GuiUtils;
 import org.tinylog.Logger;
 
 import java.util.List;

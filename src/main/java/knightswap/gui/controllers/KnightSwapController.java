@@ -14,8 +14,8 @@ import knightswap.gui.KnightSwapApplication;
 import org.tinylog.Logger;
 
 import knightswap.KnightSwapState;
-import knightswap.util.PieceType;
-import knightswap.util.Position;
+import knightswap.utils.PieceType;
+import knightswap.utils.Position;
 
 import java.io.IOException;
 import java.util.HashMap;
