@@ -5,7 +5,10 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
@@ -31,18 +34,11 @@ public class KnightSwapController {
     @FXML private Label currentScoreLabel;
     @FXML private Label bestScoreLabel;
     @FXML private Label statusLabel;
-    @FXML private Button button00;
-    @FXML private Button button01;
-    @FXML private Button button02;
-    @FXML private Button button10;
-    @FXML private Button button11;
-    @FXML private Button button12;
-    @FXML private Button button20;
-    @FXML private Button button21;
-    @FXML private Button button22;
-    @FXML private Button button30;
-    @FXML private Button button31;
-    @FXML private Button button32;
+    @FXML private GridPane boardGrid;
+
+    private static final int BOARD_ROWS = 4;
+    private static final int BOARD_COLS = 3;
+    private static final double BUTTON_SIZE = 110.0;
 
     private int movesMade;
     private static String playerName;
@@ -83,33 +79,64 @@ public class KnightSwapController {
         gameState = new KnightSwapState();
         Logger.debug("New game state initialized for game board.");
 
-        buttons = new Button[][] {
-                { button00, button01, button02 },
-                { button10, button11, button12 },
-                { button20, button21, button22 },
-                { button30, button31, button32 }
-        };
+        buttons = new Button[BOARD_ROWS][BOARD_COLS];
 
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 3; col++) {
-                Button btn = buttons[row][col];
-                btn.setFont(Font.font("Segoe UI Symbol", 45));
-
-                btn.setOnAction(this::handleButtonClick);
-
-                if ((row + col) % 2 == 0) {
-                    originalStyles.put(btn, DARK_SQUARE_STYLE);
-                } else {
-                    originalStyles.put(btn, LIGHT_SQUARE_STYLE);
-                }
-            }
-        }
+        setupGridPane();
         Logger.debug("Chessboard buttons initialized and action handlers set.");
 
         updateBoard();
         updateScoreAndStatusLabels();
         Logger.info("KnightSwap GUI initialized and displayed.");
     }
+
+    /**
+     * Dynamically sets up the GridPane with buttons for the chessboard.
+     * Creates ColumnConstraints and RowConstraints and adds buttons to the grid.
+     */
+    private void setupGridPane() {
+        boardGrid.getChildren().clear();
+        boardGrid.getColumnConstraints().clear();
+        boardGrid.getRowConstraints().clear();
+        Logger.debug("Clearing existing GridPane children and constraints for dynamic setup.");
+
+        for (int col = 0; col < BOARD_COLS; col++) {
+            ColumnConstraints colConst = new ColumnConstraints();
+            colConst.setPrefWidth(BUTTON_SIZE);
+            colConst.setHgrow(Priority.ALWAYS);
+            boardGrid.getColumnConstraints().add(colConst);
+        }
+        Logger.debug("Column constraints for {} columns set.", BOARD_COLS);
+
+        for (int row = 0; row < BOARD_ROWS; row++) {
+            RowConstraints rowConst = new RowConstraints();
+            rowConst.setPrefHeight(BUTTON_SIZE);
+            rowConst.setVgrow(Priority.ALWAYS);
+            boardGrid.getRowConstraints().add(rowConst);
+        }
+        Logger.debug("Row constraints for {} rows set.", BOARD_ROWS);
+
+        for (int row = 0; row < BOARD_ROWS; row++) {
+            for (int col = 0; col < BOARD_COLS; col++) {
+                Button btn = new Button();
+                btn.setPrefSize(BUTTON_SIZE, BUTTON_SIZE);
+                btn.setFont(Font.font("Segoe UI Symbol", 45));
+                btn.setOnAction(this::handleButtonClick);
+                btn.setFocusTraversable(false);
+
+                if ((row + col) % 2 == 0) {
+                    btn.setStyle(DARK_SQUARE_STYLE);
+                    originalStyles.put(btn, DARK_SQUARE_STYLE);
+                } else {
+                    btn.setStyle(LIGHT_SQUARE_STYLE);
+                    originalStyles.put(btn, LIGHT_SQUARE_STYLE);
+                }
+                buttons[row][col] = btn;
+                boardGrid.add(btn, col, row);
+            }
+        }
+        Logger.info("Dynamically added {} buttons to the GridPane.", BOARD_ROWS * BOARD_COLS);
+    }
+
 
     /**
      * Handles click events on the chessboard buttons.
@@ -121,8 +148,12 @@ public class KnightSwapController {
     @FXML
     private void handleButtonClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        int clickedRow = GridPane.getRowIndex(clickedButton) == null ? 0 : GridPane.getRowIndex(clickedButton);
-        int clickedCol = GridPane.getColumnIndex(clickedButton) == null ? 0 : GridPane.getColumnIndex(clickedButton);
+        Integer clickedRowIndex = GridPane.getRowIndex(clickedButton);
+        Integer clickedColIndex = GridPane.getColumnIndex(clickedButton);
+
+        int clickedRow = (clickedRowIndex == null) ? 0 : clickedRowIndex;
+        int clickedCol = (clickedColIndex == null) ? 0 : clickedColIndex;
+
         Position clickedPosition = new Position(clickedRow, clickedCol);
 
         Logger.debug("Button clicked at ({}, {}).", clickedRow, clickedCol);
@@ -230,6 +261,7 @@ public class KnightSwapController {
      */
     @FXML
     private void handleResetButton() {
+        Logger.info("Reset button clicked. Resetting game state.");
         movesMade = 0;
         gameState = new KnightSwapState();
         firstClickButton = null;
@@ -248,8 +280,8 @@ public class KnightSwapController {
      */
     private void updateBoard() {
         Logger.debug("Updating chessboard visuals.");
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 3; col++) {
+        for (int row = 0; row < BOARD_ROWS; row++) {
+            for (int col = 0; col < BOARD_COLS; col++) {
                 char pieceChar = gameState.getPieceAt(row, col);
                 String pieceSymbol;
 
@@ -302,7 +334,7 @@ public class KnightSwapController {
             }
         } else {
             bestScoreLabel.setText("0");
-            Logger.warn("Best score label set to 0. ScoreBoardManager or player name is unavailable (Manager: {}, PlayerName: {}).", manager != null, playerName != null);
+            Logger.warn("Best score label set to 0. ScoreBoardManager or player name is unavailable (Manager available: {}, PlayerName available: {}).", manager != null, playerName != null);
         }
     }
 
@@ -311,8 +343,8 @@ public class KnightSwapController {
      * This is typically used when the puzzle is solved.
      */
     private void disableAllButtons() {
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 3; col++) {
+        for (int row = 0; row < BOARD_ROWS; row++) {
+            for (int col = 0; col < BOARD_COLS; col++) {
                 buttons[row][col].setDisable(true);
             }
         }
@@ -324,8 +356,8 @@ public class KnightSwapController {
      * This is typically used when resetting the puzzle.
      */
     private void enableAllButtons() {
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 3; col++) {
+        for (int row = 0; row < BOARD_ROWS; row++) {
+            for (int col = 0; col < BOARD_COLS; col++) {
                 buttons[row][col].setDisable(false);
             }
         }

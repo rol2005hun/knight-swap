@@ -5,11 +5,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -21,7 +19,7 @@
             <Region HBox.hgrow="ALWAYS" />
             <Button onAction="#showLeaderBoard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="Leaderboard" />
         </HBox>
-      <Separator style="-fx-padding: 0 10 0 10;" />
+        <Separator style="-fx-padding: 0 10 0 10;" />
 
         <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 0 10 10 10;">
             <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Current Score:" textFill="WHITE" />
@@ -29,9 +27,9 @@
 
             <Region HBox.hgrow="ALWAYS" /> <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Best Score:" textFill="WHITE" />
             <Label fx:id="bestScoreLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="31.0" style="-fx-font-size: 16; -fx-font-weight: bold;" text="0" textFill="WHITE" />
-         <VBox.margin>
-            <Insets top="20.0" />
-         </VBox.margin>
+            <VBox.margin>
+                <Insets top="20.0" />
+            </VBox.margin>
         </HBox>
 
         <HBox spacing="10.0" style="-fx-alignment: CENTER_LEFT; -fx-padding: 0 0 10 0;">
@@ -46,35 +44,7 @@
             <Button onAction="#handleResetButton" style="-fx-font-size: 23; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="↻" />
         </HBox>
 
-        <GridPane alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: #DEB887; -fx-background-color: #A0522D; -fx-border-width: 6; -fx-padding: 0 0 1 0; -fx-border-radius: 5;">
-
-            <Button fx:id="button00" prefHeight="110" prefWidth="110" style="-fx-background-color: #A0522D; -fx-background-radius: 0;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <Button fx:id="button01" prefHeight="110" prefWidth="110" style="-fx-background-color: #FFF8DC; -fx-background-radius: 0;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-            <Button fx:id="button02" prefHeight="110" prefWidth="110" style="-fx-background-color: #A0522D; -fx-background-radius: 0;" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-
-            <Button fx:id="button10" prefHeight="110" prefWidth="110" style="-fx-background-color: #FFF8DC; -fx-background-radius: 0;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <Button fx:id="button11" prefHeight="110" prefWidth="110" style="-fx-background-color: #A0522D; -fx-background-radius: 0;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="button12" prefHeight="110" prefWidth="110" style="-fx-background-color: #FFF8DC; -fx-background-radius: 0;" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-
-            <Button fx:id="button20" prefHeight="110" prefWidth="110" style="-fx-background-color: #A0522D; -fx-background-radius: 0;" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <Button fx:id="button21" prefHeight="110" prefWidth="110" style="-fx-background-color: #FFF8DC; -fx-background-radius: 0;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button fx:id="button22" prefHeight="110" prefWidth="110" style="-fx-background-color: #A0522D; -fx-background-radius: 0;" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-
-            <Button fx:id="button30" prefHeight="110" prefWidth="110" style="-fx-background-color: #FFF8DC; -fx-background-radius: 0;" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <Button fx:id="button31" prefHeight="110" prefWidth="110" style="-fx-background-color: #A0522D; -fx-background-radius: 0;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Button fx:id="button32" prefHeight="110" prefWidth="110" style="-fx-background-color: #FFF8DC; -fx-background-radius: 0;" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <columnConstraints>
-                <ColumnConstraints />
-                <ColumnConstraints />
-                <ColumnConstraints />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-            </rowConstraints>
-
+        <GridPane fx:id="boardGrid" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: #DEB887; -fx-background-color: #A0522D; -fx-border-width: 6; -fx-padding: 0 0 1 0; -fx-border-radius: 5;">
         </GridPane>
     </VBox>
 </AnchorPane>
