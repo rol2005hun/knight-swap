@@ -4,20 +4,21 @@ import javafx.application.Application;
 import knightswap.gui.KnightSwapApplication;
 
 /**
- * The GUI main class which runs the application for users to play.
+ * The main entry point for launching the graphical user interface (GUI)
+ * of the Knight Swap puzzle game.
+ * This class cannot be instantiated.
  */
-public class GuiGame {
+public final class GuiGame {
     /**
      * Private constructor to prevent instantiation of this utility class.
-     * This class contains only static methods and should not be instantiated.
      */
     private GuiGame() {}
 
     /**
-     * The main entry point of the KnightSwap puzzle GUI application.
-     * The users can play the game with running this class.
+     * The main method that launches the JavaFX {@link KnightSwapApplication}.
+     * This is the entry point for users to play the game with the GUI.
      *
-     * @param args Command line arguments (not used in this application).
+     * @param args Command line arguments (not utilized by the application).
      */
     public static void main(String[] args) {
         Application.launch(KnightSwapApplication.class, args);

@@ -1,8 +1,11 @@
 package knightswap.utils;
 
 /**
- * A helper class that stores the start and end positions of a move.
- * @param start the starting position of the move
- * @param end the ending position of the move
+ * A record class representing a parsed move in the Knight Swap game,
+ * consisting of a starting {@link Position} and an ending {@link Position}.
+ * This record provides an immutable way to store move data.
+ *
+ * @param start The {@link Position} from which a piece moves.
+ * @param end The {@link Position} to which a piece moves.
  */
 public record ParsedMove(Position start, Position end) {}

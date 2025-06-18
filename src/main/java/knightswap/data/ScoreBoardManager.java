@@ -19,8 +19,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Manages loading and saving player scores from/to a JSON file.
- * Provides methods to update scores and retrieve sorted lists of records.
+ * Manages the persistence and retrieval of player scores.
+ * This class handles loading scores from and saving scores to a JSON file,
+ * as well as updating individual player records.
  */
 public class ScoreBoardManager {
     private static final Path SCORE_FILE_PATH = Paths.get("scores.json");
@@ -29,8 +30,9 @@ public class ScoreBoardManager {
     private static List<PlayerScore> playerScores;
 
     /**
-     * Constructs a new ScoreBoardManager.
-     * Initializes Gson and attempts to load existing scores from the JSON file.
+     * Constructs a new {@code ScoreBoardManager}.
+     * Initializes the {@link Gson} instance and attempts to load existing scores
+     * from the {@code scores.json} file.
      */
     public ScoreBoardManager() {
         gson = new GsonBuilder().setPrettyPrinting().create();
@@ -39,8 +41,9 @@ public class ScoreBoardManager {
     }
 
     /**
-     * Loads player scores from the JSON file.
-     * If the file does not exist or is empty, an empty list is initialized.
+     * Loads player scores from the {@code scores.json} file.
+     * If the file does not exist or an error occurs during loading,
+     * the internal list of scores is initialized as empty.
      */
     private void loadScores() {
         if (!Files.exists(SCORE_FILE_PATH)) {
@@ -63,7 +66,8 @@ public class ScoreBoardManager {
     }
 
     /**
-     * Saves the current list of player scores to the JSON file.
+     * Saves the current list of {@link PlayerScore} objects to the {@code scores.json} file.
+     * If an error occurs during saving, it is logged.
      */
     public void saveScores() {
         try {
@@ -77,11 +81,13 @@ public class ScoreBoardManager {
     }
 
     /**
-     * Adds a new player's score or updates an existing player's best score
-     * if the new score is lower (better).
+     * Adds a new player's score or updates an existing player's best score.
+     * If a player with the given {@code playerName} already exists, their {@code bestScore}
+     * is updated only if the new {@code moves} value is lower (better).
+     * After updating or adding, the scores are saved to the file.
      *
-     * @param playerName The name of the player.
-     * @param moves The number of moves in the completed game.
+     * @param playerName The {@link String} name of the player.
+     * @param moves The {@code int} number of moves achieved in the game.
      */
     public void addOrUpdatePlayerScore(String playerName, int moves) {
         Optional<PlayerScore> existingScore = playerScores.stream()
@@ -102,12 +108,13 @@ public class ScoreBoardManager {
         }
         saveScores();
     }
-    
+
     /**
-     * Retrieves the top N player scores, sorted by best moves (ascending).
+     * Retrieves a list of the top players, sorted by their {@code bestScore} in ascending order.
+     * The list is limited to the specified number of entries.
      *
-     * @param limit The maximum number of top scores to retrieve.
-     * @return A sorted list of {@link PlayerScore} objects.
+     * @param limit The {@code int} maximum number of top scores to return.
+     * @return A {@link List} of {@link PlayerScore} objects representing the top scores.
      */
     public static List<PlayerScore> getTopScores(int limit) {
         return playerScores.stream()
@@ -117,10 +124,11 @@ public class ScoreBoardManager {
     }
 
     /**
-     * Gets a player's score record by name.
+     * Retrieves a {@link PlayerScore} record for a specific player by their name.
      *
-     * @param playerName The name of the player.
-     * @return An Optional containing the PlayerScore if found, empty otherwise.
+     * @param playerName The {@link String} name of the player to search for.
+     * @return An {@link Optional} containing the {@link PlayerScore} if found,
+     * otherwise an empty {@link Optional}.
      */
     public Optional<PlayerScore> getPlayerScore(String playerName) {
         return playerScores.stream()

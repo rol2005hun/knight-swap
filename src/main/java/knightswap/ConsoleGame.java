@@ -7,21 +7,22 @@ import org.tinylog.Logger;
 import java.util.Optional;
 
 /**
- * The console game class which solves the KnightSwap problem with BFS algorithm.
+ * Provides a command-line interface for solving the KnightSwap puzzle
+ * using the Breadth-First Search (BFS) algorithm.
+ * This class cannot be instantiated.
  */
 public final class ConsoleGame {
     /**
      * Private constructor to prevent instantiation of this utility class.
-     * This class contains only static methods and should not be instantiated.
      */
     private ConsoleGame() {}
 
     /**
-     * The main entry point of the KnightSwap puzzle solver application.
-     * Initializes the puzzle, attempts to solve it using Breadth-First Search,
-     * and logs the solution path length if found.
+     * The main entry point for the console-based KnightSwap puzzle solver.
+     * Initializes the puzzle, applies a BFS algorithm to find a solution,
+     * and logs the outcome, including the solution path length if found.
      *
-     * @param args Command line arguments (not used in this application).
+     * @param args Command line arguments (not utilized).
      */
     public static void main(String[] args) {
         Logger.info("The KnightSwap game has been started.");
@@ -47,11 +48,11 @@ public final class ConsoleGame {
     }
 
     /**
-     * Helper method to calculate the length of the path leading to the solution.
-     * It traverses the parent chain of Node objects until it reaches the root Node.
+     * Calculates the number of steps (moves) from the initial state to the given solution {@link Node}.
+     * This is determined by traversing the parent chain up to the root node.
      *
-     * @param node the Node containing the solution
-     * @return the number of steps from the root Node to the solution Node
+     * @param node The {@link Node} representing the solution state.
+     * @return The {@code int} number of steps in the solution path.
      */
     private static int calculatePathLength(Node<?> node) {
         int count = 0;

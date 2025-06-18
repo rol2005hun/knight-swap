@@ -13,27 +13,27 @@ import knightswap.utils.Position;
 import knightswap.utils.ParsedMove;
 
 /**
- * Represents the state of the KnightSwap puzzle game.
- * The board is 4 rows x 3 columns. Dark knights start in row 0, light knights in row 3.
- * The objective is to swap the positions of the knights.
- * Players take turns moving a knight: Light ({@link PieceType#LIGHT}) starts.
- * A knight move is valid if it's a standard knight move and the target square is not attacked by an opposing piece.
+ * Represents the current state of the Knight Swap puzzle on a 4x3 board.
+ * Dark knights ({@code 'D'}) start on row 0, and light knights ({@code 'L'}) start on row 3.
+ * The game's objective is to swap their initial positions.
+ * Players (Light then Dark) take turns moving their knights. A move is valid if it's a standard
+ * knight's move to an empty square that is not attacked by an opposing knight.
  */
 public class KnightSwapState implements State<String> {
     /**
-     * The board representation, where {@code 'D'} is a dark knight, {@code 'L'} is a light knight, and {@code '.'} is an empty square.
+     * The board representation, where 'D' is a dark knight, 'L' is a light knight, and '.' is an empty square.
      */
     final char[][] board;
 
     /**
-     * The type of piece whose turn it is to move next.
+     * The {@link PieceType} of the player whose turn it is to move next.
      */
     private PieceType currentPlayer;
 
     /**
-     * Creates a new {@code KnightSwapState} with the initial board setup.
-     * The board is 4x3. Dark knights are placed in row 0, light knights in row 3.
-     * The current player is set to {@link PieceType#LIGHT}.
+     * Creates a new {@code KnightSwapState} with the initial setup for the Knight Swap puzzle.
+     * The board is initialized with dark knights in row 0 and light knights in row 3.
+     * The {@link #currentPlayer} is set to {@link PieceType#LIGHT}.
      */
     public KnightSwapState() {
         this.board = new char[4][3];
@@ -55,10 +55,11 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Creates a new {@code KnightSwapState} as a deep copy of an existing state.
-     * This is crucial for the puzzle solver to explore different paths without modifying the original state.
+     * Creates a new {@code KnightSwapState} by performing a deep copy of another {@code KnightSwapState} instance.
+     * This constructor is essential for state-space search algorithms (like BFS) to explore different paths
+     * without altering the original state.
      *
-     * @param other the state to copy
+     * @param other The {@code KnightSwapState} instance to be copied.
      */
     public KnightSwapState(KnightSwapState other) {
         this.board = new char[4][3];
@@ -69,12 +70,12 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Returns the character representing the piece at the given position.
+     * Returns the character symbol representing the piece at the specified board position.
      *
-     * @param row the row
-     * @param col the column
-     * @return the character representing the piece ('D', 'L', or '.')
-     * @throws IllegalArgumentException if the position is out of bounds
+     * @param row The {@code int} row index (0-3).
+     * @param col The {@code int} column index (0-2).
+     * @return The {@code char} symbol of the piece ('D', 'L', or '.').
+     * @throws IllegalArgumentException If the provided row or column is out of the board's bounds.
      */
     public char getPieceAt(int row, int col) {
         if (row < 0 || row >= 4 || col < 0 || col >= 3) {
@@ -86,10 +87,10 @@ public class KnightSwapState implements State<String> {
 
     /**
      * {@inheritDoc}
-     * Checks if the puzzle is solved. The puzzle is solved when all light knights
-     * are in the top row (row 0) and all dark knights are in the bottom row (row 3).
+     * Determines if the puzzle has reached its solved state.
+     * The puzzle is solved when all dark knights are in row 3 and all light knights are in row 0.
      *
-     * @return {@code true} if the puzzle is solved, {@code false} otherwise
+     * @return {@code true} if the puzzle is solved, {@code false} otherwise.
      */
     @Override
     public boolean isSolved() {
@@ -106,10 +107,10 @@ public class KnightSwapState implements State<String> {
 
     /**
      * {@inheritDoc}
-     * Returns a set of all legal moves for the {@link #currentPlayer}.
-     * A move is represented as a string "startRow startCol endRow endCol".
+     * Generates a set of all legal moves available to the {@link #currentPlayer} from the current board state.
+     * Each move is represented as a {@link String} in the format "startRow startCol endRow endCol".
      *
-     * @return a {@link Set} of legal moves
+     * @return A {@link Set} of {@link String}s, where each string describes a legal move.
      */
     @Override
     public Set<String> getLegalMoves() {
@@ -146,11 +147,12 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Parses a move string into a {@link ParsedMove} object.
-     * A move string is expected in the format "startRow startCol endRow endCol".
+     * Parses a string representation of a move into a {@link ParsedMove} object.
+     * The expected format is "{@code startRow startCol endRow endCol}".
      *
-     * @param moveString the string representation of the move
-     * @return a {@link ParsedMove} object if parsing is successful, or {@code null} if the string format is invalid or coordinates are out of bounds.
+     * @param moveString The {@link String} representing the move.
+     * @return A {@link ParsedMove} object if parsing is successful and coordinates are valid,
+     * otherwise {@code null}.
      */
     private ParsedMove parseMoveString(String moveString) {
         try {
@@ -180,11 +182,17 @@ public class KnightSwapState implements State<String> {
 
     /**
      * {@inheritDoc}
-     * Checks if a specific move is legal.
-     * A move string should be in the format "startRow startCol endRow endCol".
+     * Checks if a given move, specified as a string, is legal according to the game rules.
+     * A move is legal if:
+     * <ul>
+     * <li>It corresponds to the {@link #currentPlayer}'s piece.</li>
+     * <li>The target square is empty.</li>
+     * <li>It is a valid knight's move.</li>
+     * <li>The target square is not attacked by an opposing knight.</li>
+     * </ul>
      *
-     * @param moveString a string representing the move (e.g., "0 0 1 2")
-     * @return {@code true} if the move is legal, {@code false} otherwise
+     * @param moveString A {@link String} representing the move (e.g., "0 0 1 2").
+     * @return {@code true} if the move is legal, {@code false} otherwise.
      */
     @Override
     public boolean isLegalMove(String moveString) {
@@ -226,12 +234,12 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Checks if a given position is attacked by a piece of a specific type.
-     * This method looks for any knight of {@code attackingPieceType} that can move to {@code position}.
+     * Checks if a specific {@link Position} on the board is currently under attack by an opposing knight.
+     * An attack is defined by a knight of {@code attackingPieceType} being able to move to {@code position}.
      *
-     * @param position the position to check for attacks
-     * @param attackingPieceType the type of piece (e.g., {@link PieceType#DARK}) that would attack
-     * @return {@code true} if the position is attacked by a knight of the specified type, {@code false} otherwise
+     * @param position The {@link Position} to check for attacks.
+     * @param attackingPieceType The {@link PieceType} of the attacking knight (e.g., {@link PieceType#DARK}).
+     * @return {@code true} if the position is attacked, {@code false} otherwise.
      */
     private boolean isAttacked(Position position, PieceType attackingPieceType) {
         char attackerSymbol = attackingPieceType.getSymbol();
@@ -257,10 +265,12 @@ public class KnightSwapState implements State<String> {
 
     /**
      * {@inheritDoc}
-     * Applies the specified move to the current state.
-     * Assumes the move is legal (should be checked with {@link #isLegalMove(String)} beforehand).
+     * Applies the specified move to the current board state.
+     * This method assumes the move has already been validated as legal by {@link #isLegalMove(String)}.
+     * After the move, the {@link #currentPlayer} is switched to the opponent.
      *
-     * @param moveString a string representing the move (e.g., "0 0 1 2")
+     * @param moveString A {@link String} representing the move (e.g., "0 0 1 2").
+     * @throws IllegalArgumentException If the move string is illegal or cannot be parsed.
      */
     @Override
     public void makeMove(String moveString) {
@@ -288,9 +298,9 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Returns the current player whose turn it is.
+     * Returns the {@link PieceType} of the player whose turn it is to make a move.
      *
-     * @return the {@link PieceType} of the current player
+     * @return The {@link PieceType} of the current player.
      */
     public PieceType getCurrentPlayer() {
         return currentPlayer;
@@ -298,15 +308,23 @@ public class KnightSwapState implements State<String> {
 
     /**
      * {@inheritDoc}
-     * Creates and returns a deep copy of the current state.
+     * Creates and returns a deep copy of this {@code KnightSwapState} instance.
      *
-     * @return a new {@code KnightSwapState} object that is a deep copy of this instance
+     * @return A new {@link State} object that is an independent copy of the current state.
      */
     @Override
     public State<String> clone() {
         return new KnightSwapState(this);
     }
 
+    /**
+     * {@inheritDoc}
+     * Compares this {@code KnightSwapState} object to another object for equality.
+     * Two states are considered equal if their board configurations and current players are identical.
+     *
+     * @param o The {@link Object} to compare with this state.
+     * @return {@code true} if the specified object is equal to this state, {@code false} otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -315,6 +333,13 @@ public class KnightSwapState implements State<String> {
         return Arrays.deepEquals(board, that.board) && currentPlayer == that.currentPlayer;
     }
 
+    /**
+     * {@inheritDoc}
+     * Computes a hash code for this {@code KnightSwapState} object.
+     * The hash code is based on the board configuration and the current player.
+     *
+     * @return An {@code int} hash code value for this state.
+     */
     @Override
     public int hashCode() {
         int result = Arrays.deepHashCode(board);
@@ -323,9 +348,10 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Returns a string representation of the current board state.
+     * Returns a multi-line string representation of the current board state,
+     * including the current player whose turn it is.
      *
-     * @return a string representing the board, including the current player
+     * @return A {@link String} representation of the board and current player.
      */
     @Override
     public String toString() {

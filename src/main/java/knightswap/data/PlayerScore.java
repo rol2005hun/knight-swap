@@ -1,18 +1,18 @@
 package knightswap.data;
 
 /**
- * Represents a player's record, storing their name and best score achieved in the Knight Swap game.
- * The best score is defined as the minimum number of moves required to solve the puzzle.
+ * Represents a player's record in the Knight Swap game, holding their name and best score.
+ * The {@code bestScore} signifies the fewest moves taken to solve the puzzle.
  */
 public class PlayerScore {
     private final String playerName;
     private int bestScore;
 
     /**
-     * Constructs a new {@code PlayerScore} object with the specified player name and best score.
+     * Constructs a new {@code PlayerScore} instance.
      *
-     * @param playerName The {@code String} name of the player.
-     * @param bestScore The {@code int} best (minimum) number of moves achieved by the player for a solved puzzle.
+     * @param playerName The {@link String} name of the player.
+     * @param bestScore The {@code int} minimum number of moves achieved by the player.
      */
     public PlayerScore(String playerName, int bestScore) {
         this.playerName = playerName;
@@ -20,39 +20,37 @@ public class PlayerScore {
     }
 
     /**
-     * Public getter for the player's name.
+     * Retrieves the player's name.
      *
-     * @return the {@code String} name of the player.
+     * @return The {@link String} name of the player.
      */
     public String getPlayerName() {
         return playerName;
     }
 
     /**
-     * Public getter for the player's best score.
-     * The best score represents the minimum number of moves.
+     * Retrieves the player's best score.
      *
-     * @return the {@code int} best score (minimum moves) of the player.
+     * @return The {@code int} representing the player's minimum moves.
      */
     public int getBestScore() {
         return bestScore;
     }
 
     /**
-     * Sets the player's best score.
-     * This method should typically be called when a player achieves a new, lower (better) score.
+     * Updates the player's best score.
      *
-     * @param bestScore The new {@code int} best score to set for the player.
+     * @param bestScore The new {@code int} best score to be set.
      */
     public void setBestScore(int bestScore) {
         this.bestScore = bestScore;
     }
 
     /**
-     * Returns a string representation of the {@code PlayerScore} object.
-     * The format is "PlayerName: BestScore score".
+     * Returns a formatted string of the player's record.
+     * The format is "{@code PlayerName}: {@code BestScore} score".
      *
-     * @return a {@code String} representation of this player's record.
+     * @return A {@link String} representation of the player's score.
      */
     @Override
     public String toString() {

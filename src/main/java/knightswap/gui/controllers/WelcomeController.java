@@ -6,25 +6,22 @@ import knightswap.gui.KnightSwapApplication;
 import org.tinylog.Logger;
 
 /**
- * Controller class for the KnightSwap game board GUI.
- * Manages user interactions with the welcome screen,
- * displays the game's name, handles user's name input.
+ * Controller for the Welcome screen of the Knight Swap application.
+ * Manages user interaction for entering a player name and initiating the game.
  */
 public class WelcomeController {
     @FXML private TextField playerNameTextField;
 
     /**
-     * Default constructor for the WelcomeController.
-     * This class is typically instantiated by the FXML loader.
+     * Constructs a new {@code WelcomeController}.
+     * This constructor is invoked by the FXML loader.
      */
     public WelcomeController() {}
 
     /**
      * Handles the action when the "Start Game" button is clicked.
-     * This method validates the player's name input. If the name is valid (not empty),
-     * it proceeds to show the main game screen, hiding the current welcome screen.
-     * If the name is empty, it updates the text field's prompt to indicate
-     * that a name is required.
+     * Validates the entered player name: if not empty, it proceeds to load
+     * and display the main game board; otherwise, it prompts the user to enter a name.
      */
     @FXML
     private void handleStartGameButton() {

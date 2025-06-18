@@ -15,33 +15,24 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Utility class providing common helper methods for JavaFX GUI operations
- * within the Knight Swap application. This includes functionalities such as
- * loading fallback game screens and setting application icons.
- * <p>
- * This class is designed to be static, meaning all its methods can be called
- * directly using the class name (e.g., {@code GuiUtils.setStageIcon(...)})
- * without needing to create an instance of {@code GuiUtils}.
- * </p>
- * <p>
- * It helps in maintaining a clean separation of concerns by abstracting away
- * common UI boilerplate logic from the main application flow and controllers.
- * </p>
+ * Provides static utility methods for common JavaFX GUI operations
+ * within the Knight Swap application. These include loading fallback screens,
+ * setting stage icons, and configuring table cell factories.
  */
 public class GuiUtils {
     /**
-     * Private constructor to prevent instantiation of this utility class.
-     * All methods in this class are static and are meant to be called directly
-     * via the class name.
+     * Private constructor to prevent instantiation of this utility class,
+     * as all its methods are static.
      */
     private GuiUtils() {}
 
     /**
-     * Attempts to load and display the main game screen (chessboard.fxml) as a fallback,
-     * if a direct return to a parent Stage is not possible (e.g., the parent Stage is null).
-     * This should never happen!
+     * Attempts to load and display the main game board ({@code chessboard.fxml})
+     * as a fallback. This method is called if the reference to the original game stage
+     * is lost, ensuring the application can still proceed.
      *
-     @param callingClass The class from which this method was called (used for resource loading).
+     * @param callingClass The {@link Class} from which this method is invoked,
+     * used for correctly loading FXML resources from the classpath.
      */
     public static void loadChessboardFallback(Class<?> callingClass) {
         Logger.warn("Main game stage reference was null. Attempting to open a new game screen as fallback.");
@@ -64,15 +55,13 @@ public class GuiUtils {
     }
 
     /**
-     * Sets the application icon for a given Stage.
-     * This method attempts to load an image from the specified resource path and
-     * add it to the Stage's icon list. It logs appropriate messages if the icon
-     * is loaded successfully or if an error occurs (e.g., file not found).
+     * Sets the application icon for a given {@link Stage}.
+     * It attempts to load {@code /logo.png} from the classpath resources.
+     * Logs an error if the icon cannot be found or loaded.
      *
-     * @param stage The {@link javafx.stage.Stage} to which the icon should be applied.
-     * This path should be relative to the classpath root.
-     * @param callingClass The {@link java.lang.Class} from which this method is called,
-     * used to correctly load the resource from the classpath.
+     * @param stage The {@link Stage} to which the icon will be applied.
+     * @param callingClass The {@link Class} from which this method is called,
+     * used for resource loading.
      */
     public static void setStageIcon(Stage stage, Class<?> callingClass) {
         try {
@@ -88,13 +77,12 @@ public class GuiUtils {
     }
 
     /**
-     * Sets a {@link javafx.scene.control.TableCell} factory for the given {@link TableColumn}
-     * that centers the text content within each cell. This method is generic and can be
-     * applied to any column type.
+     * Configures a {@link TableColumn}'s cell factory to center the text content within each cell.
+     * This method is generic and can be applied to any {@link TableColumn} type within a {@link TableView}.
      *
-     * @param <S> The type of the items in the {@link TableView} (e.g., PlayerScore).
-     * @param <T> The type of the value in the {@link TableColumn} (e.g., String, Integer).
-     * @param column The {@link TableColumn} to which the centered cell factory should be applied.
+     * @param <S> The type of the items in the {@link TableView} that the column belongs to.
+     * @param <T> The type of the value displayed in the {@link TableColumn}'s cells.
+     * @param column The {@link TableColumn} to which the centered cell factory will be applied.
      */
     public static <S, T> void setCenteredCellFactory(TableColumn<S, T> column) {
         column.setCellFactory(_ -> new TableCell<>() {
