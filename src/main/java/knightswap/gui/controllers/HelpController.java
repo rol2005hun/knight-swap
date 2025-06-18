@@ -27,7 +27,9 @@ public class HelpController implements Initializable {
      * Constructs a new {@code HelpController}.
      * This constructor is invoked by the FXML loader.
      */
-    public HelpController() {}
+    public HelpController() {
+        Logger.debug("HelpController instance created.");
+    }
 
     /**
      * Sets the main game {@link Stage} associated with this help window.
@@ -37,6 +39,7 @@ public class HelpController implements Initializable {
      */
     public void setGameStage(Stage gameStage) {
         this.gameStage = gameStage;
+        Logger.debug("Game stage set for HelpController.");
     }
 
     /**
@@ -48,6 +51,7 @@ public class HelpController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        Logger.info("Help screen controller initializing.");
         String solution = """
             (3, 0) -> (1, 1)
             (0, 1) -> (2, 2)
@@ -74,6 +78,7 @@ public class HelpController implements Initializable {
         """;
 
         solutionStepsTextArea.setText(solution.stripIndent().indent(0));
+        Logger.debug("Solution steps loaded into text area.");
     }
 
     /**
@@ -94,6 +99,7 @@ public class HelpController implements Initializable {
             gameStage.show();
             Logger.info("Returned to main game screen (state preserved).");
         } else {
+            Logger.warn("Game stage reference was null when closing help. Attempting fallback to main game screen.");
             GuiUtils.loadChessboardFallback(getClass());
         }
     }

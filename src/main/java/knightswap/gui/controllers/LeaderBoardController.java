@@ -40,7 +40,9 @@ public class LeaderBoardController {
      * Constructs a new {@code LeaderBoardController}.
      * This constructor is invoked by the FXML loader.
      */
-    public LeaderBoardController() {}
+    public LeaderBoardController() {
+        Logger.debug("LeaderBoardController instance created.");
+    }
 
     /**
      * Sets the main game {@link Stage} associated with this leaderboard window.
@@ -50,6 +52,7 @@ public class LeaderBoardController {
      */
     public void setGameStage(Stage gameStage) {
         this.gameStage = gameStage;
+        Logger.debug("Game stage set for LeaderBoardController.");
     }
 
     /**
@@ -59,6 +62,7 @@ public class LeaderBoardController {
      */
     @FXML
     private void initialize() {
+        Logger.info("Leaderboard controller initializing.");
         rankColumn.setCellValueFactory(param -> {
             int currentRank = 1;
             int previousScore = -1;
@@ -80,13 +84,13 @@ public class LeaderBoardController {
                     return new ReadOnlyObjectWrapper<>(currentRank);
                 }
             }
+            Logger.warn("Could not determine rank for a PlayerScore. This should not happen.");
             return new ReadOnlyObjectWrapper<>(0);
         });
         GuiUtils.setCenteredCellFactory(rankColumn);
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("playerName"));
         GuiUtils.setCenteredCellFactory(nameColumn);
-
 
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("bestScore"));
         GuiUtils.setCenteredCellFactory(scoreColumn);
@@ -104,9 +108,11 @@ public class LeaderBoardController {
      */
     private void loadScores() {
         scores.clear();
+        Logger.debug("Clearing existing scores from leaderboard table.");
 
         List<PlayerScore> topScores = ScoreBoardManager.getTopScores(100);
         scores.addAll(topScores);
+        Logger.debug("Added {} top scores to observable list.", topScores.size());
 
         leaderboardTable.setItems(scores);
         Logger.info("Leaderboard scores loaded successfully. Ranks calculated dynamically.");
@@ -130,6 +136,7 @@ public class LeaderBoardController {
             gameStage.show();
             Logger.info("Returned to main game screen (state preserved).");
         } else {
+            Logger.warn("Game stage reference was null when closing leaderboard. Attempting fallback to main game screen.");
             GuiUtils.loadChessboardFallback(getClass());
         }
     }

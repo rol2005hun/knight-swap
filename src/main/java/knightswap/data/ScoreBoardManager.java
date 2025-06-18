@@ -36,7 +36,7 @@ public class ScoreBoardManager {
      */
     public ScoreBoardManager() {
         gson = new GsonBuilder().setPrettyPrinting().create();
-        playerScores = new ArrayList<>();
+        Logger.debug("ScoreBoardManager instance created. Attempting to load scores.");
         loadScores();
     }
 
@@ -47,7 +47,7 @@ public class ScoreBoardManager {
      */
     private void loadScores() {
         if (!Files.exists(SCORE_FILE_PATH)) {
-            Logger.warn("Score file not found: {}", SCORE_FILE_PATH);
+            Logger.info("Score file '{}' not found. Starting with an empty score list.", SCORE_FILE_PATH);
             playerScores = new ArrayList<>();
             return;
         }
@@ -57,10 +57,14 @@ public class ScoreBoardManager {
             playerScores = gson.fromJson(reader, listType);
             if (playerScores == null) {
                 playerScores = new ArrayList<>();
+                Logger.warn("Score file '{}' was empty or contained invalid JSON, initializing with an empty list.", SCORE_FILE_PATH);
             }
-            Logger.info("Loaded {} player scores from {}", playerScores.size(), SCORE_FILE_PATH);
+            Logger.info("Successfully loaded {} player scores from '{}'.", playerScores.size(), SCORE_FILE_PATH);
         } catch (IOException e) {
-            Logger.error("Error loading scores from file {}: {}", SCORE_FILE_PATH, e.getMessage());
+            Logger.error("Failed to load scores from file '{}': {}. Initializing with an empty score list.", SCORE_FILE_PATH, e.getMessage(), e);
+            playerScores = new ArrayList<>();
+        } catch (Exception e) {
+            Logger.error("An unexpected error occurred while parsing scores from file '{}': {}. Initializing with an empty score list.", SCORE_FILE_PATH, e.getMessage(), e);
             playerScores = new ArrayList<>();
         }
     }
@@ -71,12 +75,18 @@ public class ScoreBoardManager {
      */
     public void saveScores() {
         try {
+            Path parentDir = SCORE_FILE_PATH.getParent();
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+                Logger.debug("Created directory for score file: {}", parentDir);
+            }
+
             try (FileWriter writer = new FileWriter(SCORE_FILE_PATH.toFile())) {
                 gson.toJson(playerScores, writer);
-                Logger.info("Saved {} player scores to {}", playerScores.size(), SCORE_FILE_PATH);
+                Logger.info("Successfully saved {} player scores to '{}'.", playerScores.size(), SCORE_FILE_PATH);
             }
         } catch (IOException e) {
-            Logger.error("Error saving scores to file {}: {}", SCORE_FILE_PATH, e.getMessage());
+            Logger.error("Failed to save scores to file '{}': {}.", SCORE_FILE_PATH, e.getMessage(), e);
         }
     }
 
@@ -97,16 +107,17 @@ public class ScoreBoardManager {
         if (existingScore.isPresent()) {
             PlayerScore score = existingScore.get();
             if (moves < score.getBestScore()) {
+                Logger.debug("Updating best score for player '{}': from {} to {} moves.", playerName, score.getBestScore(), moves);
                 score.setBestScore(moves);
-                Logger.info("Updated best score for {} to {} moves.", playerName, moves);
+                saveScores();
             } else {
-                Logger.info("Score for {} ({}) is not better than existing best ({}).", playerName, moves, score.getBestScore());
+                Logger.debug("Score for player '{}' ({} moves) is not better than existing best ({} moves). No update needed.", playerName, moves, score.getBestScore());
             }
         } else {
             playerScores.add(new PlayerScore(playerName, moves));
-            Logger.info("Added new player {} with score {} moves.", playerName, moves);
+            Logger.info("Added new player '{}' with initial score {} moves.", playerName, moves);
+            saveScores();
         }
-        saveScores();
     }
 
     /**

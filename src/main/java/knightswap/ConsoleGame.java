@@ -28,13 +28,14 @@ public final class ConsoleGame {
         Logger.info("The KnightSwap game has been started.");
 
         KnightSwapState initialState = new KnightSwapState();
-        Logger.info("Initial state created:\n{}", initialState);
+        Logger.debug("Initial state created:\n{}", initialState);
 
         BreadthFirstSearch<String> bfsSolver = new BreadthFirstSearch<>();
 
         Logger.info("Starting Breadth-First Search to solve the puzzle...");
 
         Optional<Node<String>> solution = bfsSolver.solveAndPrintSolution(initialState);
+        Logger.debug("BFS solution process completed.");
 
         if (solution.isPresent()) {
             Node<String> solutionNode = solution.get();

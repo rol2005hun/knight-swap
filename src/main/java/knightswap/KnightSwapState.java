@@ -51,7 +51,8 @@ public class KnightSwapState implements State<String> {
         board[3][2] = PieceType.LIGHT.getSymbol();
 
         this.currentPlayer = PieceType.LIGHT;
-        Logger.info("KnightSwap puzzle initialized.");
+        Logger.info("KnightSwap puzzle initial state created. Current player: {}.", currentPlayer);
+        Logger.debug("Initial board state:\n{}", this.toString());
     }
 
     /**
@@ -67,6 +68,7 @@ public class KnightSwapState implements State<String> {
             System.arraycopy(other.board[i], 0, this.board[i], 0, 3);
         }
         this.currentPlayer = other.currentPlayer;
+        Logger.debug("KnightSwapState deep copy created. Current player: {}.", currentPlayer);
     }
 
     /**
@@ -79,7 +81,7 @@ public class KnightSwapState implements State<String> {
      */
     public char getPieceAt(int row, int col) {
         if (row < 0 || row >= 4 || col < 0 || col >= 3) {
-            Logger.error("Attempted to access out of bounds position: ({}, {})", row, col);
+            Logger.error("Attempted to access out of bounds board position: ({}, {}).", row, col);
             throw new IllegalArgumentException("Position out of bounds: (" + row + ", " + col + ")");
         }
         return board[row][col];
@@ -102,7 +104,9 @@ public class KnightSwapState implements State<String> {
                 getPieceAt(0, 1) == PieceType.LIGHT.getSymbol() &&
                 getPieceAt(0, 2) == PieceType.LIGHT.getSymbol());
 
-        return darkKnightsAtBottom && lightKnightsAtTop;
+        boolean solved = darkKnightsAtBottom && lightKnightsAtTop;
+        Logger.debug("Checking if solved. Result: {}. Dark at bottom: {}, Light at top: {}.", solved, darkKnightsAtBottom, lightKnightsAtTop);
+        return solved;
     }
 
     /**
@@ -115,6 +119,7 @@ public class KnightSwapState implements State<String> {
     @Override
     public Set<String> getLegalMoves() {
         Set<String> legalMoves = new HashSet<>();
+        Logger.debug("Generating legal moves for current player: {}.", currentPlayer);
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 3; c++) {
                 char piece = getPieceAt(r, c);
@@ -136,6 +141,9 @@ public class KnightSwapState implements State<String> {
                             String moveString = String.format("%d %d %d %d", start.row(), start.col(), end.row(), end.col());
                             if (isLegalMove(moveString)) {
                                 legalMoves.add(moveString);
+                                Logger.trace("Found legal move: {} (from {} to {}).", moveString, start, end);
+                            } else {
+                                Logger.trace("Move {} (from {} to {}) is not legal.", moveString, start, end);
                             }
                         }
                     }
@@ -155,6 +163,7 @@ public class KnightSwapState implements State<String> {
      * otherwise {@code null}.
      */
     private ParsedMove parseMoveString(String moveString) {
+        Logger.debug("Attempting to parse move string: '{}'.", moveString);
         try {
             String[] parts = moveString.split(" ");
             if (parts.length != 4) {
@@ -170,9 +179,10 @@ public class KnightSwapState implements State<String> {
             Position start = new Position(startRow, startCol);
             Position end = new Position(endRow, endCol);
 
+            Logger.debug("Move string '{}' parsed successfully to start: {}, end: {}.", moveString, start, end);
             return new ParsedMove(start, end);
         } catch (NumberFormatException e) {
-            Logger.error("Error parsing move coordinates for move '{}': {}", moveString, e.getMessage());
+            Logger.error("Error parsing move coordinates for move '{}': {}", moveString, e.getMessage(), e);
             return null;
         } catch (IllegalArgumentException e) {
             Logger.warn("Move string contains out-of-bounds coordinates: {}. Error: {}", moveString, e.getMessage());
@@ -196,8 +206,10 @@ public class KnightSwapState implements State<String> {
      */
     @Override
     public boolean isLegalMove(String moveString) {
+        Logger.debug("Checking legality of move: '{}'. Current player: {}.", moveString, currentPlayer);
         ParsedMove parsedMove = parseMoveString(moveString);
         if (parsedMove == null) {
+            Logger.debug("Move string '{}' could not be parsed, not a legal move.", moveString);
             return false;
         }
 
@@ -209,27 +221,27 @@ public class KnightSwapState implements State<String> {
 
         if ((currentPlayer == PieceType.LIGHT && piece != PieceType.LIGHT.getSymbol()) ||
                 (currentPlayer == PieceType.DARK && piece != PieceType.DARK.getSymbol())) {
-            Logger.debug("Attempted to move opponent's piece ({}) or empty square ({}) from {}. Current player: {}.", piece, '.', start);
+            Logger.debug("Move from {} (piece: {}) rejected: not current player's piece or empty square. Current player: {}.", start, piece, currentPlayer);
             return false;
         }
 
         if (targetPiece != '.') {
-            Logger.debug("Target square {} is not empty. Contains: {}", end, targetPiece);
+            Logger.debug("Move from {} to {} rejected: target square is not empty (contains {}).", start, end, targetPiece);
             return false;
         }
 
         if (!end.isValidKnightMove(start)) {
-            Logger.debug("Move from {} to {} is not a valid knight move.", start, end);
+            Logger.debug("Move from {} to {} rejected: not a valid knight move.", start, end);
             return false;
         }
 
         PieceType attackingPieceType = currentPlayer.opponent();
         if (isAttacked(end, attackingPieceType)) {
-            Logger.debug("Target square {} is attacked by an opposing {} piece.", end, attackingPieceType);
+            Logger.debug("Move from {} to {} rejected: target square {} is attacked by an opposing {} piece.", start, end, end, attackingPieceType);
             return false;
         }
 
-        Logger.debug("Move {} is legal for {}.", moveString, currentPlayer);
+        Logger.debug("Move '{}' from {} to {} is legal for player {}.", moveString, start, end, currentPlayer);
         return true;
     }
 
@@ -243,6 +255,7 @@ public class KnightSwapState implements State<String> {
      */
     private boolean isAttacked(Position position, PieceType attackingPieceType) {
         char attackerSymbol = attackingPieceType.getSymbol();
+        Logger.trace("Checking if position {} is attacked by {} pieces.", position, attackingPieceType);
 
         int[][] knightMoves = {
                 {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
@@ -255,11 +268,12 @@ public class KnightSwapState implements State<String> {
 
             if (attackerRow >= 0 && attackerRow < 4 && attackerCol >= 0 && attackerCol < 3) {
                 if (getPieceAt(attackerRow, attackerCol) == attackerSymbol) {
-                    Logger.debug("Position {} attacked by {} at ({}, {}).", position, attackerSymbol, attackerRow, attackerCol);
+                    Logger.debug("Position {} attacked by {} piece at ({}, {}).", position, attackerSymbol, attackerRow, attackerCol);
                     return true;
                 }
             }
         }
+        Logger.trace("Position {} is NOT attacked by {} pieces.", position, attackingPieceType);
         return false;
     }
 
@@ -274,14 +288,15 @@ public class KnightSwapState implements State<String> {
      */
     @Override
     public void makeMove(String moveString) {
+        Logger.info("Attempting to make move: '{}' for player {}.", moveString, currentPlayer);
         if (!isLegalMove(moveString)) {
-            Logger.error("Cannot make move '{}' as it is not legal.", moveString);
+            Logger.error("Cannot make move '{}' as it is not legal. Throwing IllegalArgumentException.", moveString);
             throw new IllegalArgumentException("Illegal move: " + moveString);
         }
 
         ParsedMove parsedMove = parseMoveString(moveString);
         if (parsedMove == null) {
-            Logger.error("Cannot make move '{}' as it could not be parsed. This should not happen if isLegalMove was called first.", moveString);
+            Logger.error("Cannot make move '{}' as it could not be parsed. This should not happen if isLegalMove was called first. Throwing IllegalArgumentException.", moveString);
             throw new IllegalArgumentException("Invalid move string provided to makeMove: " + moveString);
         }
 
@@ -292,7 +307,7 @@ public class KnightSwapState implements State<String> {
         board[start.row()][start.col()] = '.';
         board[end.row()][end.col()] = piece;
 
-        Logger.info("Move made: {} {} -> {} {} (Piece: {}).", start.row(), start.col(), end.row(), end.col(), piece);
+        Logger.info("Move successfully made: {} {} -> {} {} (Piece: {}).", start.row(), start.col(), end.row(), end.col(), piece);
         currentPlayer = currentPlayer.opponent();
         Logger.debug("Current player switched to {}.", currentPlayer);
     }
@@ -314,6 +329,7 @@ public class KnightSwapState implements State<String> {
      */
     @Override
     public State<String> clone() {
+        Logger.debug("Cloning KnightSwapState.");
         return new KnightSwapState(this);
     }
 
@@ -330,7 +346,9 @@ public class KnightSwapState implements State<String> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         KnightSwapState that = (KnightSwapState) o;
-        return Arrays.deepEquals(board, that.board) && currentPlayer == that.currentPlayer;
+        boolean isEqual = Arrays.deepEquals(board, that.board) && currentPlayer == that.currentPlayer;
+        Logger.trace("Comparing states. Result: {}. This hash: {}, Other hash: {}.", isEqual, this.hashCode(), that.hashCode());
+        return isEqual;
     }
 
     /**
@@ -344,6 +362,7 @@ public class KnightSwapState implements State<String> {
     public int hashCode() {
         int result = Arrays.deepHashCode(board);
         result = 31 * result + Objects.hash(currentPlayer);
+        Logger.trace("Calculated hash code: {}.", result);
         return result;
     }
 

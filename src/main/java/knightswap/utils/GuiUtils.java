@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * Provides static utility methods for common JavaFX GUI operations
  * within the Knight Swap application. These include loading fallback screens,
- * setting stage icons, and configuring table cell factories.
+ * setting stage icons, configuring table cell factories, and loading FXML scenes.
  */
 public class GuiUtils {
     /**
@@ -50,7 +50,9 @@ public class GuiUtils {
             newGameStage.show();
             Logger.info("A new game screen was opened (fallback).");
         } catch (IOException e) {
-            Logger.error("Failed to load 'chessboard.fxml' during fallback: {}", e.getMessage());
+            Logger.error("Failed to load 'chessboard.fxml' during fallback: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            Logger.error("An unexpected error occurred during fallback chessboard load: {}", e.getMessage(), e);
         }
     }
 
@@ -70,9 +72,9 @@ public class GuiUtils {
             stage.getIcons().add(icon);
             Logger.info("Application icon set successfully.");
         } catch (NullPointerException e) {
-            Logger.error("ERROR: Application icon not found at resources folder. Please verify the icon file's path and your build configuration. Details: {}", e.getMessage());
+            Logger.error("ERROR: Application icon not found at resources folder. Please verify the icon file's path and your build configuration. Details: {}", e.getMessage(), e);
         } catch (Exception e) {
-            Logger.error("Failed to load application icon at resources folder: {}", e.getMessage());
+            Logger.error("Failed to load application icon at resources folder: {}", e.getMessage(), e);
         }
     }
 
@@ -97,5 +99,56 @@ public class GuiUtils {
                 }
             }
         });
+    }
+
+    /**
+     * A functional interface to allow configuring a controller after it's loaded.
+     * This is useful when the FXML loading utility needs to pass data or
+     * set specific properties on the controller instance.
+     */
+    @FunctionalInterface
+    public interface SceneControllerConfigurator {
+        /**
+         * Configures the loaded FXML controller.
+         *
+         * @param controller The controller object.
+         */
+        void configure(Object controller);
+    }
+
+    /**
+     * Helper method to load an FXML scene and configure its stage.
+     * Logs debug messages for FXML loading and stage setup.
+     *
+     * @param fxmlPath The path to the FXML file relative to the classpath.
+     * @param title The title for the stage.
+     * @param stage The stage to set the scene on.
+     * @param configurator An optional configurator to set properties on the controller. Can be {@code null}.
+     * @throws IOException If the FXML file cannot be loaded.
+     */
+    public static void loadAndSetScene(String fxmlPath, String title, Stage stage, SceneControllerConfigurator configurator) throws IOException {
+        FXMLLoader loader = new FXMLLoader(GuiUtils.class.getResource(fxmlPath));
+        Scene scene;
+        try {
+            scene = new Scene(loader.load());
+            Logger.debug("FXML file '{}' loaded successfully.", fxmlPath);
+        } catch (IOException e) {
+            Logger.error("Failed to load FXML file '{}': {}", fxmlPath, e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            Logger.error("An unexpected error occurred while loading FXML file '{}': {}", fxmlPath, e.getMessage(), e);
+            throw new IOException("Unexpected error loading FXML: " + fxmlPath, e);
+        }
+
+        if (configurator != null) {
+            configurator.configure(loader.getController());
+        }
+
+        stage.setTitle(title);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        GuiUtils.setStageIcon(stage, GuiUtils.class);
+        stage.show();
+        Logger.debug("Stage '{}' configured and shown for FXML: {}.", title, fxmlPath);
     }
 }

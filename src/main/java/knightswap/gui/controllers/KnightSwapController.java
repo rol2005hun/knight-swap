@@ -62,7 +62,9 @@ public class KnightSwapController {
      * Constructs a new {@code KnightSwapController}.
      * This constructor is invoked by the FXML loader.
      */
-    public KnightSwapController() {}
+    public KnightSwapController() {
+        Logger.debug("KnightSwapController instance created.");
+    }
 
     /**
      * Initializes the controller after all {@code @FXML} annotated fields are injected.
@@ -72,13 +74,14 @@ public class KnightSwapController {
     public void initialize() {
         if (playerName == null || playerName.isEmpty()) {
             playerName = "Guest";
-            Logger.warn("Player name not retrieved, defaulting to 'Guest'.");
+            Logger.warn("Player name not retrieved, defaulting to 'Guest'. This should be set by a prior screen.");
         } else {
-            Logger.info("Player name set to: {}", playerName);
+            Logger.info("Game initialized for player: {}", playerName);
         }
 
         movesMade = 0;
         gameState = new KnightSwapState();
+        Logger.debug("New game state initialized for game board.");
 
         buttons = new Button[][] {
                 { button00, button01, button02 },
@@ -101,9 +104,11 @@ public class KnightSwapController {
                 }
             }
         }
+        Logger.debug("Chessboard buttons initialized and action handlers set.");
 
         updateBoard();
         updateScoreAndStatusLabels();
+        Logger.info("KnightSwap GUI initialized and displayed.");
     }
 
     /**
@@ -120,7 +125,7 @@ public class KnightSwapController {
         int clickedCol = GridPane.getColumnIndex(clickedButton) == null ? 0 : GridPane.getColumnIndex(clickedButton);
         Position clickedPosition = new Position(clickedRow, clickedCol);
 
-        Logger.debug("Button clicked at ({}, {})", clickedRow, clickedCol);
+        Logger.debug("Button clicked at ({}, {}).", clickedRow, clickedCol);
 
         if (firstClickButton == null) {
             char pieceAtClickedPos = gameState.getPieceAt(clickedRow, clickedCol);
@@ -132,13 +137,13 @@ public class KnightSwapController {
                 firstClickPosition = clickedPosition;
                 firstClickButton.setStyle(HIGHLIGHT_STYLE);
                 statusLabel.setText("Selected: (" + clickedRow + ", " + clickedCol + "). Choose target.");
-                Logger.info("Piece selected at ({}, {}). Current player: {}", clickedRow, clickedCol, gameState.getCurrentPlayer());
+                Logger.info("Piece selected at ({}, {}). Current player: {}.", clickedRow, clickedCol, gameState.getCurrentPlayer());
             } else if (pieceAtClickedPos == '.') {
                 statusLabel.setText("Empty square! Select a piece.");
-                Logger.warn("Clicked on empty square at ({}, {}). No piece selected.", clickedRow, clickedCol);
+                Logger.debug("Clicked on empty square at ({}, {}). No piece selected.", clickedRow, clickedCol);
             } else {
                 statusLabel.setText("Not your piece! (" + gameState.getCurrentPlayer() + " to move)");
-                Logger.warn("Clicked on opponent's piece ({}) at ({}, {}).", pieceAtClickedPos, clickedRow, clickedCol);
+                Logger.warn("Clicked on opponent's piece ({}) at ({}, {}). Current player: {}.", pieceAtClickedPos, clickedRow, clickedCol, gameState.getCurrentPlayer());
             }
         } else {
             if (clickedButton == firstClickButton) {
@@ -153,10 +158,12 @@ public class KnightSwapController {
                         firstClickPosition.row(), firstClickPosition.col(),
                         clickedPosition.row(), clickedPosition.col());
 
+                Logger.debug("Attempting to move from {} to {}. Move string: {}", firstClickPosition, clickedPosition, moveString);
                 if (gameState.isLegalMove(moveString)) {
                     gameState.makeMove(moveString);
                     movesMade++;
-                    Logger.info("Move made: {}.", moveString);
+                    Logger.info("Successful move from {} to {}. Moves made: {}. Next player: {}.",
+                            firstClickPosition, clickedPosition, movesMade, gameState.getCurrentPlayer());
 
                     firstClickButton.setStyle(originalStyles.get(firstClickButton));
                     firstClickButton = null;
@@ -167,21 +174,21 @@ public class KnightSwapController {
 
                     if (gameState.isSolved()) {
                         statusLabel.setText("Congratulations! Puzzle solved.");
-                        Logger.info("KnightSwap puzzle solved!");
+                        Logger.info("KnightSwap puzzle solved in {} moves by {}.", movesMade, playerName);
                         disableAllButtons();
 
                         ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
                         if (manager != null) {
                             manager.addOrUpdatePlayerScore(playerName, movesMade);
+                            Logger.info("Score for player '{}' updated/added: {} moves.", playerName, movesMade);
                             updateScoreAndStatusLabels();
                         } else {
-                            Logger.error("ScoreBoardManager is null, cannot save score for player {}.", playerName);
+                            Logger.error("ScoreBoardManager is null, cannot save score for player {}. This indicates a critical application setup issue.", playerName);
                         }
                     }
                 } else {
-                    Logger.warn("Illegal move attempted from ({}, {}) to ({}, {}).",
-                            firstClickPosition.row(), firstClickPosition.col(),
-                            clickedRow, clickedCol);
+                    Logger.warn("Illegal move attempted from {} to {}. Reason: Not a valid game move.",
+                            firstClickPosition, clickedPosition);
                     statusLabel.setText("Invalid move! Try again.");
                     firstClickButton.setStyle(originalStyles.get(firstClickButton));
                     firstClickButton = null;
@@ -200,6 +207,7 @@ public class KnightSwapController {
      */
     public void showHelpScreen(ActionEvent event) throws IOException {
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Logger.debug("Request to show help screen from game stage.");
         KnightSwapApplication.showHelpScreen(currentStage);
     }
 
@@ -212,6 +220,7 @@ public class KnightSwapController {
      */
     public void showLeaderBoard(ActionEvent event) throws IOException {
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Logger.debug("Request to show leaderboard from game stage.");
         KnightSwapApplication.showLeaderBoard(currentStage);
     }
 
@@ -230,7 +239,7 @@ public class KnightSwapController {
 
         updateBoard();
         updateScoreAndStatusLabels();
-        Logger.info("Game board reset successful. Moves reset to 0.");
+        Logger.info("Game board reset successful. Moves reset to 0. Game ready for player: {}.", playerName);
     }
 
     /**
@@ -238,6 +247,7 @@ public class KnightSwapController {
      * Sets the correct piece symbols and square colors for all buttons.
      */
     private void updateBoard() {
+        Logger.debug("Updating chessboard visuals.");
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 3; col++) {
                 char pieceChar = gameState.getPieceAt(row, col);
@@ -257,7 +267,9 @@ public class KnightSwapController {
 
         if (firstClickButton != null) {
             firstClickButton.setStyle(HIGHLIGHT_STYLE);
+            Logger.debug("Retaining highlight on selected button at {}.", firstClickPosition);
         }
+        Logger.debug("Chessboard visuals updated successfully.");
     }
 
     /**
@@ -266,26 +278,31 @@ public class KnightSwapController {
      * Displays the current player's turn, moves made, and the player's best score.
      */
     private void updateScoreAndStatusLabels() {
+        Logger.debug("Updating score and status labels.");
         if (gameState.isSolved()) {
             statusLabel.setText("Congratulations! Puzzle solved.");
+            Logger.debug("Status label set to 'Puzzle solved'.");
         } else {
             statusLabel.setText(String.format("%s to move.", gameState.getCurrentPlayer() == PieceType.LIGHT ? "Light" : "Dark"));
+            Logger.debug("Status label set to indicate current player: {}.", gameState.getCurrentPlayer());
         }
 
         currentScoreLabel.setText(String.valueOf(movesMade));
+        Logger.debug("Current score label set to: {}.", movesMade);
 
         ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
         if (manager != null && playerName != null && !playerName.isEmpty()) {
             Optional<PlayerScore> bestScore = manager.getPlayerScore(playerName);
             if (bestScore.isPresent()) {
                 bestScoreLabel.setText(String.valueOf(bestScore.get().getBestScore()));
+                Logger.debug("Best score label set to {} for player {}.", bestScore.get().getBestScore(), playerName);
             } else {
                 bestScoreLabel.setText("0");
+                Logger.debug("Best score label set to 0 (no previous score for player {}).", playerName);
             }
         } else {
             bestScoreLabel.setText("0");
-            if (manager == null) Logger.error("ScoreBoardManager is null when updating best score label.");
-            if (playerName == null || playerName.isEmpty()) Logger.warn("Player name is not set when updating best score label.");
+            Logger.warn("Best score label set to 0. ScoreBoardManager or player name is unavailable (Manager: {}, PlayerName: {}).", manager != null, playerName != null);
         }
     }
 
@@ -299,6 +316,7 @@ public class KnightSwapController {
                 buttons[row][col].setDisable(true);
             }
         }
+        Logger.debug("All chessboard buttons disabled.");
     }
 
     /**
@@ -311,6 +329,7 @@ public class KnightSwapController {
                 buttons[row][col].setDisable(false);
             }
         }
+        Logger.debug("All chessboard buttons enabled.");
     }
 
     /**
@@ -322,5 +341,6 @@ public class KnightSwapController {
      */
     public static void setPlayerName(String name) {
         playerName = name;
+        Logger.debug("Player name static field set to: {}.", name);
     }
 }

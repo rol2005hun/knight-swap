@@ -1,8 +1,6 @@
 package knightswap.gui;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import knightswap.data.ScoreBoardManager;
 import knightswap.gui.controllers.HelpController;
@@ -47,14 +45,12 @@ public class KnightSwapApplication extends Application {
      * Sets up the primary stage and displays the initial welcome screen.
      *
      * @param stage The primary {@link Stage} for this application.
-     * @throws IOException If the {@code welcomescreen.fxml} file cannot be loaded.
+     * @throws Exception If an error occurs during application start.
      */
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws Exception {
         primaryStage = stage;
-
-        GuiUtils.setStageIcon(stage, getClass());
-
+        Logger.debug("Application starting. Primary stage initialized.");
         showWelcomeScreen();
     }
 
@@ -64,15 +60,9 @@ public class KnightSwapApplication extends Application {
      * @throws IOException If the {@code /welcomescreen.fxml} file cannot be loaded.
      */
     public static void showWelcomeScreen() throws IOException {
-        FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/welcomescreen.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        primaryStage.setTitle("Welcome!");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
-
-        Logger.info("Welcome screen loaded!");
+        Logger.info("Attempting to load welcome screen.");
+        GuiUtils.loadAndSetScene("/welcomescreen.fxml", "Welcome!", primaryStage, null);
+        Logger.info("Welcome screen loaded successfully.");
     }
 
     /**
@@ -84,18 +74,17 @@ public class KnightSwapApplication extends Application {
      * @throws IOException If the {@code /chessboard.fxml} file cannot be loaded.
      */
     public static void showGameScreen(String playerName) throws IOException {
-        KnightSwapController.setPlayerName(playerName);
-        FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/chessboard.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        primaryStage.setTitle("Knight Swap - Player: " + playerName);
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
-
-        getScoreBoardManager();
-
-        Logger.info("Game screen loaded!");
+        Logger.info("Attempting to load game screen for player: {}.", playerName);
+        GuiUtils.loadAndSetScene("/chessboard.fxml", "Knight Swap - Player: " + playerName, primaryStage, controller -> {
+            if (controller instanceof KnightSwapController) {
+                KnightSwapController.setPlayerName(playerName);
+                Logger.debug("KnightSwapController player name set.");
+            } else {
+                Logger.warn("Loaded controller for chessboard.fxml is not a KnightSwapController. Player name not set.");
+            }
+        });
+        getScoreBoardManager(); // Ensure manager is initialized when game starts
+        Logger.info("Game screen loaded successfully for player: {}.", playerName);
     }
 
     /**
@@ -110,19 +99,17 @@ public class KnightSwapApplication extends Application {
         gameStageToReturnTo.hide();
         Logger.info("Main game screen hidden to show help.");
 
-        FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/helpscreen.fxml"));
         Stage helpStage = new Stage();
-        Scene helpScene = new Scene(loader.load());
+        Logger.debug("Attempting to load help screen in new stage.");
 
-        GuiUtils.setStageIcon(helpStage, KnightSwapApplication.class);
-
-        HelpController helpController = loader.getController();
-        helpController.setGameStage(gameStageToReturnTo);
-
-        helpStage.setTitle("Knight Swap - Help");
-        helpStage.setScene(helpScene);
-        helpStage.setResizable(false);
-        helpStage.show();
+        GuiUtils.loadAndSetScene("/helpscreen.fxml", "Knight Swap - Help", helpStage, controller -> {
+            if (controller instanceof HelpController) {
+                ((HelpController) controller).setGameStage(gameStageToReturnTo);
+                Logger.debug("HelpController game stage set.");
+            } else {
+                Logger.warn("Loaded controller for helpscreen.fxml is not a HelpController. Cannot set game stage.");
+            }
+        });
         Logger.info("Help screen opened in a new window.");
     }
 
@@ -138,19 +125,17 @@ public class KnightSwapApplication extends Application {
         gameStageToReturnTo.hide();
         Logger.info("Main game screen hidden to show the leaderboard.");
 
-        FXMLLoader loader = new FXMLLoader(KnightSwapApplication.class.getResource("/leaderboard.fxml"));
-        Stage helpStage = new Stage();
-        Scene helpScene = new Scene(loader.load());
+        Stage leaderboardStage = new Stage();
+        Logger.debug("Attempting to load leaderboard screen in new stage.");
 
-        GuiUtils.setStageIcon(helpStage, KnightSwapApplication.class);
-
-        LeaderBoardController leaderBoardController = loader.getController();
-        leaderBoardController.setGameStage(gameStageToReturnTo);
-
-        helpStage.setTitle("Knight Swap - Leaderboard");
-        helpStage.setScene(helpScene);
-        helpStage.setResizable(false);
-        helpStage.show();
+        GuiUtils.loadAndSetScene("/leaderboard.fxml", "Knight Swap - Leaderboard", leaderboardStage, controller -> {
+            if (controller instanceof LeaderBoardController) {
+                ((LeaderBoardController) controller).setGameStage(gameStageToReturnTo);
+                Logger.debug("LeaderBoardController game stage set.");
+            } else {
+                Logger.warn("Loaded controller for leaderboard.fxml is not a LeaderBoardController. Cannot set game stage.");
+            }
+        });
         Logger.info("Leaderboard opened in a new window.");
     }
 
@@ -164,10 +149,13 @@ public class KnightSwapApplication extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
+        Logger.info("Application is shutting down.");
 
         if (scoreBoardManager != null) {
             scoreBoardManager.saveScores();
             Logger.info("Scores saved on application shutdown.");
+        } else {
+            Logger.warn("ScoreBoardManager was null on shutdown, no scores to save.");
         }
     }
 }
