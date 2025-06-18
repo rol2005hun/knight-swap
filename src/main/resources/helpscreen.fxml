@@ -21,11 +21,11 @@
         <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0">
             <Label text="Help" textFill="WHITE">
                 <font>
-                    <Font name="System Bold" size="20.0" />
+                    <Font name="System Bold" size="30.0" />
                 </font>
             </Label>
             <Region HBox.hgrow="ALWAYS" />
-            <Button onAction="#handleCloseButton" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-background-color: #DEB887; -fx-text-fill: #A0522D;" text="Close" />
+            <Button onAction="#handleCloseButton" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-background-color: #DEB887; -fx-text-fill: #A0522D; -fx-cursor: hand;" text="Close" />
         </HBox>
       <Separator prefWidth="200.0" />
         <VBox spacing="10.0">

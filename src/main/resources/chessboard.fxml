@@ -17,9 +17,9 @@
 
     <VBox style="-fx-background-color: #A0522D; -fx-alignment: center;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
         <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 10 10 10;">
-            <Button onAction="#showHelpScreen" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;" text="Help" />
+            <Button onAction="#showHelpScreen" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="Help" />
             <Region HBox.hgrow="ALWAYS" />
-            <Button onAction="#showLeaderBoard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;" text="Leaderboard" />
+            <Button onAction="#showLeaderBoard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="Leaderboard" />
         </HBox>
       <Separator style="-fx-padding: 0 10 0 10;" />
 
@@ -43,7 +43,7 @@
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <Button onAction="#handleResetButton" style="-fx-font-size: 23; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;" text="↻" />
+            <Button onAction="#handleResetButton" style="-fx-font-size: 23; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="↻" />
         </HBox>
 
         <GridPane alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: #DEB887; -fx-background-color: #A0522D; -fx-border-width: 6; -fx-padding: 0 0 1 0; -fx-border-radius: 5;">
