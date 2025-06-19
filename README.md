@@ -6,7 +6,7 @@ We are given a 4-row by 3-column chessboard. In the top row, we place 3 black kn
 The goal is to swap the positions of the two sets of knights.
 
 Rules:
-- Knights move according to the standard rules of chess (L-shaped knight moves).
+- Knights move according to the [standard rules](https://en.wikipedia.org/wiki/Knight_(chess)) of chess (L-shaped knight moves).
 - A knight cannot move to a square that is threatened by an opposing knight.
 - Players take turns: white moves first, then black, and so on.
 
@@ -85,9 +85,13 @@ If the move you attempt is legal, the knight will be placed at the destination. 
 
 ![Main screen - Comments](https://i.imgur.com/pCEWR6h.png)
 
+---
+
 If you need assistance with the game rules, objectives, or the board's coordinate system, simply click the "Help" button, located on the Main screen.
 
 ![Help screen - Comments](https://i.imgur.com/SleY1C3.png)
+
+---
 
 To see how you stack up against other players or to view the best solutions achieved, click the "Leaderboard" button on the Main screen. This feature allows you to track and compare performance among users.
 
