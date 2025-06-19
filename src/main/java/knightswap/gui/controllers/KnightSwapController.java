@@ -40,19 +40,20 @@ public class KnightSwapController {
     private static final int BOARD_COLS = 3;
     private static final double BUTTON_SIZE = 110.0;
 
+    private static final String DARK_SQUARE_STYLE = "-fx-background-color: #A0522D; -fx-background-radius: 0;";
+    private static final String LIGHT_SQUARE_STYLE = "-fx-background-color: #FFF8DC; -fx-background-radius: 0;";
+    private static final String HIGHLIGHT_STYLE = "-fx-background-color: #6B4226; -fx-background-radius: 0; -fx-border-color: yellow; -fx-border-width: 2;";
+
     private int movesMade;
-    private static String playerName;
+    private String playerName;
     private Button[][] buttons;
     private Button firstClickButton = null;
     private Position firstClickPosition = null;
 
     private KnightSwapState gameState;
+    private ScoreBoardManager scoreBoardManager;
 
     private final Map<Button, String> originalStyles = new HashMap<>();
-
-    private static final String DARK_SQUARE_STYLE = "-fx-background-color: #A0522D; -fx-background-radius: 0;";
-    private static final String LIGHT_SQUARE_STYLE = "-fx-background-color: #FFF8DC; -fx-background-radius: 0;";
-    private static final String HIGHLIGHT_STYLE = "-fx-background-color: #6B4226; -fx-background-radius: 0; -fx-border-color: yellow; -fx-border-width: 2;";
 
     /**
      * Constructs a new {@code KnightSwapController}.
@@ -68,25 +69,31 @@ public class KnightSwapController {
      */
     @FXML
     public void initialize() {
-        if (playerName == null || playerName.isEmpty()) {
-            playerName = "Guest";
-            Logger.warn("Player name not retrieved, defaulting to 'Guest'. This should be set by a prior screen.");
-        } else {
-            Logger.info("Game initialized for player: {}", playerName);
-        }
-
-        movesMade = 0;
-        gameState = new KnightSwapState();
-        Logger.debug("New game state initialized for game board.");
+        Logger.info("KnightSwap GUI controller initializing.");
 
         buttons = new Button[BOARD_ROWS][BOARD_COLS];
-
         setupGridPane();
-        Logger.debug("Chessboard buttons initialized and action handlers set.");
+    }
 
-        updateBoard();
-        updateScoreAndStatusLabels();
-        Logger.info("KnightSwap GUI initialized and displayed.");
+    /**
+     * Initializes the controller's internal state and sets up the initial display.
+     * This method should be called only after all necessary dependencies (such as data managers or external services)
+     * and configuration parameters (like player name) have been successfully injected into the controller.
+     */
+    public void startGame() {
+        if (playerName == null || playerName.isEmpty()) {
+            playerName = "Guest";
+            Logger.warn("Player name not set, defaulting to 'Guest'. This should be set via setPlayerName().");
+        } else {
+            Logger.info("Starting game for player: {}", playerName);
+        }
+
+        if (scoreBoardManager == null) {
+            Logger.error("ScoreBoardManager is null. Game cannot start correctly without it. Ensure it's injected.");
+        }
+
+        resetGame();
+        Logger.info("KnightSwap game started for player: {}.", playerName);
     }
 
     /**
@@ -123,20 +130,17 @@ public class KnightSwapController {
                 btn.setOnAction(this::handleButtonClick);
                 btn.setFocusTraversable(false);
 
-                if ((row + col) % 2 == 0) {
-                    btn.setStyle(DARK_SQUARE_STYLE);
-                    originalStyles.put(btn, DARK_SQUARE_STYLE);
-                } else {
-                    btn.setStyle(LIGHT_SQUARE_STYLE);
-                    originalStyles.put(btn, LIGHT_SQUARE_STYLE);
-                }
+                String style = ((row + col) % 2 == 0) ? DARK_SQUARE_STYLE : LIGHT_SQUARE_STYLE;
+                btn.setStyle(style);
+                originalStyles.put(btn, style);
+
                 buttons[row][col] = btn;
-                boardGrid.add(btn, col, row);
+                GridPane.setConstraints(btn, col, row);
+                boardGrid.getChildren().add(btn);
             }
         }
         Logger.info("Dynamically added {} buttons to the GridPane.", BOARD_ROWS * BOARD_COLS);
     }
-
 
     /**
      * Handles click events on the chessboard buttons.
@@ -148,84 +152,114 @@ public class KnightSwapController {
     @FXML
     private void handleButtonClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        Integer clickedRowIndex = GridPane.getRowIndex(clickedButton);
-        Integer clickedColIndex = GridPane.getColumnIndex(clickedButton);
-
-        int clickedRow = (clickedRowIndex == null) ? 0 : clickedRowIndex;
-        int clickedCol = (clickedColIndex == null) ? 0 : clickedColIndex;
-
+        int clickedRow = GridPane.getRowIndex(clickedButton);
+        int clickedCol = GridPane.getColumnIndex(clickedButton);
         Position clickedPosition = new Position(clickedRow, clickedCol);
 
         Logger.debug("Button clicked at ({}, {}).", clickedRow, clickedCol);
 
         if (firstClickButton == null) {
-            char pieceAtClickedPos = gameState.getPieceAt(clickedRow, clickedCol);
-
-            if ((gameState.getCurrentPlayer() == PieceType.LIGHT && pieceAtClickedPos == PieceType.LIGHT.getSymbol()) ||
-                    (gameState.getCurrentPlayer() == PieceType.DARK && pieceAtClickedPos == PieceType.DARK.getSymbol())) {
-
-                firstClickButton = clickedButton;
-                firstClickPosition = clickedPosition;
-                firstClickButton.setStyle(HIGHLIGHT_STYLE);
-                statusLabel.setText("Selected: (" + clickedRow + ", " + clickedCol + "). Choose target.");
-                Logger.info("Piece selected at ({}, {}). Current player: {}.", clickedRow, clickedCol, gameState.getCurrentPlayer());
-            } else if (pieceAtClickedPos == '.') {
-                statusLabel.setText("Empty square! Select a piece.");
-                Logger.debug("Clicked on empty square at ({}, {}). No piece selected.", clickedRow, clickedCol);
-            } else {
-                statusLabel.setText("Not your piece! (" + gameState.getCurrentPlayer() + " to move)");
-                Logger.warn("Clicked on opponent's piece ({}) at ({}, {}). Current player: {}.", pieceAtClickedPos, clickedRow, clickedCol, gameState.getCurrentPlayer());
-            }
+            handleFirstClick(clickedButton, clickedPosition);
         } else {
-            if (clickedButton == firstClickButton) {
-                firstClickButton.setStyle(originalStyles.get(firstClickButton));
-                firstClickButton = null;
-                firstClickPosition = null;
-                statusLabel.setText("Selection cancelled.");
-                Logger.info("Selection at ({}, {}) cancelled.", clickedRow, clickedCol);
-            }
-            else {
-                String moveString = String.format("%d %d %d %d",
-                        firstClickPosition.row(), firstClickPosition.col(),
-                        clickedPosition.row(), clickedPosition.col());
+            handleSecondClick(clickedButton, clickedPosition);
+        }
+    }
 
-                Logger.debug("Attempting to move from {} to {}. Move string: {}", firstClickPosition, clickedPosition, moveString);
-                if (gameState.isLegalMove(moveString)) {
-                    gameState.makeMove(moveString);
-                    movesMade++;
-                    Logger.info("Successful move from {} to {}. Moves made: {}. Next player: {}.",
-                            firstClickPosition, clickedPosition, movesMade, gameState.getCurrentPlayer());
+    /**
+     * Handles the first click in the two-click move sequence.
+     * It selects a piece if it belongs to the current player.
+     *
+     * @param clickedButton The {@link Button} that was clicked.
+     * @param clickedPosition The {@link Position} of the clicked button on the board.
+     */
+    private void handleFirstClick(Button clickedButton, Position clickedPosition) {
+        char pieceAtClickedPos = gameState.getPieceAt(clickedPosition.row(), clickedPosition.col());
 
-                    firstClickButton.setStyle(originalStyles.get(firstClickButton));
-                    firstClickButton = null;
-                    firstClickPosition = null;
+        if ((gameState.getCurrentPlayer() == PieceType.LIGHT && pieceAtClickedPos == PieceType.LIGHT.getSymbol()) ||
+                (gameState.getCurrentPlayer() == PieceType.DARK && pieceAtClickedPos == PieceType.DARK.getSymbol())) {
 
-                    updateBoard();
-                    updateScoreAndStatusLabels();
+            firstClickButton = clickedButton;
+            firstClickPosition = clickedPosition;
+            firstClickButton.setStyle(HIGHLIGHT_STYLE);
+            statusLabel.setText("Selected: (" + clickedPosition.row() + ", " + clickedPosition.col() + "). Choose target.");
+            Logger.info("Piece selected at {}. Current player: {}.", clickedPosition, gameState.getCurrentPlayer());
+        } else if (pieceAtClickedPos == '.') {
+            statusLabel.setText("Empty square! Select a piece.");
+            Logger.debug("Clicked on empty square at {}. No piece selected.", clickedPosition);
+        } else {
+            statusLabel.setText("Not your piece! (" + gameState.getCurrentPlayer() + " to move)");
+            Logger.warn("Clicked on opponent's piece ({}) at {}. Current player: {}.", pieceAtClickedPos, clickedPosition, gameState.getCurrentPlayer());
+        }
+    }
 
-                    if (gameState.isSolved()) {
-                        statusLabel.setText("Congratulations! Puzzle solved.");
-                        Logger.info("KnightSwap puzzle solved in {} moves by {}.", movesMade, playerName);
-                        disableAllButtons();
+    /**
+     * Handles the second click in the two-click move sequence.
+     * Attempts to move the previously selected piece to the clicked position.
+     * If the move is valid, it updates the game state and GUI; otherwise, it resets the selection.
+     *
+     * @param clickedButton The {@link Button} that was clicked as the target.
+     * @param clickedPosition The {@link Position} of the target button on the board.
+     */
+    private void handleSecondClick(Button clickedButton, Position clickedPosition) {
+        if (clickedButton == firstClickButton) {
+            resetSelection();
+            statusLabel.setText("Selection cancelled.");
+            Logger.info("Selection at {} cancelled.", clickedPosition);
+        } else {
+            String moveString = String.format("%d %d %d %d",
+                    firstClickPosition.row(), firstClickPosition.col(),
+                    clickedPosition.row(), clickedPosition.col());
 
-                        ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
-                        if (manager != null) {
-                            manager.addOrUpdatePlayerScore(playerName, movesMade);
-                            Logger.info("Score for player '{}' updated/added: {} moves.", playerName, movesMade);
-                            updateScoreAndStatusLabels();
-                        } else {
-                            Logger.error("ScoreBoardManager is null, cannot save score for player {}. This indicates a critical application setup issue.", playerName);
-                        }
-                    }
-                } else {
-                    Logger.warn("Illegal move attempted from {} to {}. Reason: Not a valid game move.",
-                            firstClickPosition, clickedPosition);
-                    statusLabel.setText("Invalid move! Try again.");
-                    firstClickButton.setStyle(originalStyles.get(firstClickButton));
-                    firstClickButton = null;
-                    firstClickPosition = null;
+            Logger.debug("Attempting to move from {} to {}. Move string: {}", firstClickPosition, clickedPosition, moveString);
+            if (gameState.isLegalMove(moveString)) {
+                gameState.makeMove(moveString);
+                movesMade++;
+                Logger.info("Successful move from {} to {}. Moves made: {}. Next player: {}.",
+                        firstClickPosition, clickedPosition, movesMade, gameState.getCurrentPlayer());
+
+                resetSelection();
+                updateBoard();
+                updateScoreAndStatusLabels();
+
+                if (gameState.isSolved()) {
+                    handleGameSolved();
                 }
+            } else {
+                Logger.warn("Illegal move attempted from {} to {}. Reason: Not a valid game move.",
+                        firstClickPosition, clickedPosition);
+                statusLabel.setText("Invalid move! Try again.");
+                resetSelection();
             }
+        }
+    }
+
+    /**
+     * Resets the current piece selection, removing the highlight from the previously selected button.
+     */
+    private void resetSelection() {
+        if (firstClickButton != null) {
+            firstClickButton.setStyle(originalStyles.get(firstClickButton));
+        }
+        firstClickButton = null;
+        firstClickPosition = null;
+        Logger.debug("Piece selection reset.");
+    }
+
+    /**
+     * Handles the game solved state. Displays a congratulatory message,
+     * disables further moves, and attempts to save the player's score.
+     */
+    private void handleGameSolved() {
+        statusLabel.setText("Congratulations! Puzzle solved.");
+        Logger.info("KnightSwap puzzle solved in {} moves by {}.", movesMade, playerName);
+        disableAllButtons();
+
+        if (scoreBoardManager != null) {
+            scoreBoardManager.addOrUpdatePlayerScore(playerName, movesMade);
+            Logger.info("Score for player '{}' updated/added: {} moves.", playerName, movesMade);
+            updateScoreAndStatusLabels();
+        } else {
+            Logger.error("ScoreBoardManager is null, cannot save score for player {}. This should not happen if injected correctly.", playerName);
         }
     }
 
@@ -262,16 +296,23 @@ public class KnightSwapController {
     @FXML
     private void handleResetButton() {
         Logger.info("Reset button clicked. Resetting game state.");
+        resetGame();
+        Logger.info("Game board reset successful. Moves reset to 0. Game ready for player: {}.", playerName);
+    }
+
+    /**
+     * Resets the game to its initial state, including move count, game board, and UI elements.
+     * This method is called upon initialization (now `startGame()`) and when the reset button is clicked.
+     */
+    private void resetGame() {
         movesMade = 0;
         gameState = new KnightSwapState();
-        firstClickButton = null;
-        firstClickPosition = null;
+        resetSelection();
 
         enableAllButtons();
-
         updateBoard();
         updateScoreAndStatusLabels();
-        Logger.info("Game board reset successful. Moves reset to 0. Game ready for player: {}.", playerName);
+        Logger.debug("Game state and UI reset.");
     }
 
     /**
@@ -311,20 +352,20 @@ public class KnightSwapController {
      */
     private void updateScoreAndStatusLabels() {
         Logger.debug("Updating score and status labels.");
+
         if (gameState.isSolved()) {
             statusLabel.setText("Congratulations! Puzzle solved.");
             Logger.debug("Status label set to 'Puzzle solved'.");
         } else {
             statusLabel.setText(String.format("%s to move.", gameState.getCurrentPlayer() == PieceType.LIGHT ? "Light" : "Dark"));
-            Logger.debug("Status label set to indicate current player: {}.", gameState.getCurrentPlayer());
+            Logger.debug("Status label set to indicate current player: {}.", gameState);
         }
 
         currentScoreLabel.setText(String.valueOf(movesMade));
         Logger.debug("Current score label set to: {}.", movesMade);
 
-        ScoreBoardManager manager = KnightSwapApplication.getScoreBoardManager();
-        if (manager != null && playerName != null && !playerName.isEmpty()) {
-            Optional<PlayerScore> bestScore = manager.getPlayerScore(playerName);
+        if (scoreBoardManager != null && playerName != null && !playerName.isEmpty()) {
+            Optional<PlayerScore> bestScore = scoreBoardManager.getPlayerScore(playerName);
             if (bestScore.isPresent()) {
                 bestScoreLabel.setText(String.valueOf(bestScore.get().getBestScore()));
                 Logger.debug("Best score label set to {} for player {}.", bestScore.get().getBestScore(), playerName);
@@ -334,7 +375,7 @@ public class KnightSwapController {
             }
         } else {
             bestScoreLabel.setText("0");
-            Logger.warn("Best score label set to 0. ScoreBoardManager or player name is unavailable (Manager available: {}, PlayerName available: {}).", manager != null, playerName != null);
+            Logger.warn("Best score label set to 0. ScoreBoardManager or player name is unavailable (Manager available: {}, PlayerName available: {}).", scoreBoardManager != null, playerName != null);
         }
     }
 
@@ -371,8 +412,20 @@ public class KnightSwapController {
      *
      * @param name The {@link String} name of the player.
      */
-    public static void setPlayerName(String name) {
-        playerName = name;
-        Logger.debug("Player name static field set to: {}.", name);
+    public void setPlayerName(String name) {
+        this.playerName = name;
+        Logger.debug("Player name set for KnightSwapController instance: {}.", name);
+    }
+
+    /**
+     * Sets the {@link ScoreBoardManager} for this controller.
+     * This method is used for Dependency Injection, allowing the controller
+     * to interact with the game's score management system.
+     *
+     * @param scoreBoardManager The {@link ScoreBoardManager} instance to be used by this controller.
+     */
+    public void setScoreBoardManager(ScoreBoardManager scoreBoardManager) {
+        this.scoreBoardManager = scoreBoardManager;
+        Logger.debug("ScoreBoardManager injected into KnightSwapController.");
     }
 }

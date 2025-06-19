@@ -8,11 +8,11 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
 import knightswap.data.ScoreBoardManager;
 import knightswap.utils.GuiUtils;
+import knightswap.utils.RankedPlayerScore;
 import org.tinylog.Logger;
 
 import java.util.List;
@@ -24,17 +24,19 @@ import java.util.List;
  */
 public class LeaderBoardController {
     @FXML
-    private TableView<PlayerScore> leaderboardTable;
+    private TableView<RankedPlayerScore> leaderboardTable;
     @FXML
-    private TableColumn<PlayerScore, Integer> rankColumn;
+    private TableColumn<RankedPlayerScore, Integer> rankColumn;
     @FXML
-    private TableColumn<PlayerScore, String> nameColumn;
+    private TableColumn<RankedPlayerScore, String> nameColumn;
     @FXML
-    private TableColumn<PlayerScore, Integer> scoreColumn;
+    private TableColumn<RankedPlayerScore, Integer> scoreColumn;
 
     private Stage gameStage;
 
-    private final ObservableList<PlayerScore> scores = FXCollections.observableArrayList();
+    private ScoreBoardManager scoreBoardManager;
+
+    private final ObservableList<RankedPlayerScore> scores = FXCollections.observableArrayList();
 
     /**
      * Constructs a new {@code LeaderBoardController}.
@@ -42,6 +44,17 @@ public class LeaderBoardController {
      */
     public LeaderBoardController() {
         Logger.debug("LeaderBoardController instance created.");
+    }
+
+    /**
+     * Sets the {@link ScoreBoardManager} instance for this controller.
+     * This method is used for Dependency Injection.
+     *
+     * @param scoreBoardManager The {@link ScoreBoardManager} instance.
+     */
+    public void setScoreBoardManager(ScoreBoardManager scoreBoardManager) {
+        this.scoreBoardManager = scoreBoardManager;
+        Logger.debug("ScoreBoardManager injected into LeaderBoardController.");
     }
 
     /**
@@ -63,42 +76,22 @@ public class LeaderBoardController {
     @FXML
     private void initialize() {
         Logger.info("Leaderboard controller initializing.");
-        rankColumn.setCellValueFactory(param -> {
-            int currentRank = 1;
-            int previousScore = -1;
 
-            ObservableList<PlayerScore> items = param.getTableView().getItems();
-
-            for (int i = 0; i < items.size(); i++) {
-                PlayerScore currentItem = items.get(i);
-
-                if (i > 0) {
-                    if (currentItem.getBestScore() != previousScore) {
-                        currentRank++;
-                    }
-                }
-
-                previousScore = currentItem.getBestScore();
-
-                if (currentItem == param.getValue()) {
-                    return new ReadOnlyObjectWrapper<>(currentRank);
-                }
-            }
-            Logger.warn("Could not determine rank for a PlayerScore. This should not happen.");
-            return new ReadOnlyObjectWrapper<>(0);
-        });
+        rankColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().rank()));
         GuiUtils.setCenteredCellFactory(rankColumn);
 
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("playerName"));
+        nameColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().playerScore().getPlayerName()));
         GuiUtils.setCenteredCellFactory(nameColumn);
 
-        scoreColumn.setCellValueFactory(new PropertyValueFactory<>("bestScore"));
+        scoreColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().playerScore().getBestScore()));
         GuiUtils.setCenteredCellFactory(scoreColumn);
 
         leaderboardTable.getSortOrder().add(scoreColumn);
         scoreColumn.setSortType(TableColumn.SortType.ASCENDING);
 
-        loadScores();
+        if (scoreBoardManager == null) {
+            Logger.error("ScoreBoardManager is null. Cannot load scores. Ensure it's injected.");
+        }
     }
 
     /**
@@ -106,16 +99,34 @@ public class LeaderBoardController {
      * the {@link #leaderboardTable}.
      * The table is cleared before loading the top 100 scores.
      */
-    private void loadScores() {
+    public void loadScores() {
         scores.clear();
         Logger.debug("Clearing existing scores from leaderboard table.");
 
-        List<PlayerScore> topScores = ScoreBoardManager.getTopScores(100);
-        scores.addAll(topScores);
-        Logger.debug("Added {} top scores to observable list.", topScores.size());
+        List<PlayerScore> topScores = scoreBoardManager.getTopScores(100);
+        Logger.debug("Received {} top scores from ScoreBoardManager.", topScores.size());
+
+        int currentRank = 1;
+        int previousScore = -1;
+        if (!topScores.isEmpty()) {
+            previousScore = topScores.getFirst().getBestScore();
+        }
+
+        for (int i = 0; i < topScores.size(); i++) {
+            PlayerScore ps = topScores.get(i);
+
+            if (i > 0 && ps.getBestScore() != previousScore) {
+                currentRank = i + 1;
+            }
+            scores.add(new RankedPlayerScore(ps, currentRank));
+            previousScore = ps.getBestScore();
+        }
+
+        Logger.debug("Added {} ranked scores to observable list.", scores.size());
 
         leaderboardTable.setItems(scores);
         Logger.info("Leaderboard scores loaded successfully. Ranks calculated dynamically.");
+        leaderboardTable.sort();
     }
 
     /**

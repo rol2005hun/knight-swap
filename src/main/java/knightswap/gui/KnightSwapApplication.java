@@ -1,6 +1,7 @@
 package knightswap.gui;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import knightswap.data.ScoreBoardManager;
 import knightswap.gui.controllers.HelpController;
@@ -51,6 +52,7 @@ public class KnightSwapApplication extends Application {
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
         Logger.debug("Application starting. Primary stage initialized.");
+        GuiUtils.setStageIcon(primaryStage, getClass());
         showWelcomeScreen();
     }
 
@@ -75,15 +77,19 @@ public class KnightSwapApplication extends Application {
      */
     public static void showGameScreen(String playerName) throws IOException {
         Logger.info("Attempting to load game screen for player: {}.", playerName);
-        GuiUtils.loadAndSetScene("/chessboard.fxml", "Knight Swap - Player: " + playerName, primaryStage, controller -> {
-            if (controller instanceof KnightSwapController) {
-                KnightSwapController.setPlayerName(playerName);
-                Logger.debug("KnightSwapController player name set.");
-            } else {
-                Logger.warn("Loaded controller for chessboard.fxml is not a KnightSwapController. Player name not set.");
-            }
-        });
-        getScoreBoardManager(); // Ensure manager is initialized when game starts
+
+        FXMLLoader loader = GuiUtils.loadAndSetScene("/chessboard.fxml", "Knight Swap - Player: " + playerName, primaryStage, null);
+
+        KnightSwapController gameController = loader.getController();
+
+        gameController.setPlayerName(playerName);
+        Logger.debug("KnightSwapController player name injected.");
+
+        gameController.setScoreBoardManager(getScoreBoardManager());
+        Logger.debug("ScoreBoardManager injected into KnightSwapController.");
+
+        gameController.startGame();
+
         Logger.info("Game screen loaded successfully for player: {}.", playerName);
     }
 
@@ -100,6 +106,7 @@ public class KnightSwapApplication extends Application {
         Logger.info("Main game screen hidden to show help.");
 
         Stage helpStage = new Stage();
+        GuiUtils.setStageIcon(helpStage, GuiUtils.class);
         Logger.debug("Attempting to load help screen in new stage.");
 
         GuiUtils.loadAndSetScene("/helpscreen.fxml", "Knight Swap - Help", helpStage, controller -> {
@@ -126,9 +133,10 @@ public class KnightSwapApplication extends Application {
         Logger.info("Main game screen hidden to show the leaderboard.");
 
         Stage leaderboardStage = new Stage();
+        GuiUtils.setStageIcon(leaderboardStage, GuiUtils.class);
         Logger.debug("Attempting to load leaderboard screen in new stage.");
 
-        GuiUtils.loadAndSetScene("/leaderboard.fxml", "Knight Swap - Leaderboard", leaderboardStage, controller -> {
+        FXMLLoader loader = GuiUtils.loadAndSetScene("/leaderboard.fxml", "Knight Swap - Leaderboard", leaderboardStage, controller -> {
             if (controller instanceof LeaderBoardController) {
                 ((LeaderBoardController) controller).setGameStage(gameStageToReturnTo);
                 Logger.debug("LeaderBoardController game stage set.");
@@ -136,6 +144,11 @@ public class KnightSwapApplication extends Application {
                 Logger.warn("Loaded controller for leaderboard.fxml is not a LeaderBoardController. Cannot set game stage.");
             }
         });
+
+        LeaderBoardController leaderboardController = loader.getController();
+        leaderboardController.setScoreBoardManager(getScoreBoardManager());
+        leaderboardController.loadScores();
+
         Logger.info("Leaderboard opened in a new window.");
     }
 
@@ -157,5 +170,14 @@ public class KnightSwapApplication extends Application {
         } else {
             Logger.warn("ScoreBoardManager was null on shutdown, no scores to save.");
         }
+    }
+
+    /**
+     * The main method to launch the JavaFX application.
+     *
+     * @param args Command line arguments.
+     */
+    public static void main(String[] args) {
+        launch(args);
     }
 }

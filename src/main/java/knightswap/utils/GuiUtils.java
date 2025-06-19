@@ -47,6 +47,7 @@ public class GuiUtils {
             Stage newGameStage = new Stage();
             newGameStage.setScene(new Scene(root));
             newGameStage.setTitle("Knight Swap Game");
+            setStageIcon(newGameStage, callingClass);
             newGameStage.show();
             Logger.info("A new game screen was opened (fallback).");
         } catch (IOException e) {
@@ -117,38 +118,30 @@ public class GuiUtils {
     }
 
     /**
-     * Helper method to load an FXML scene and configure its stage.
-     * Logs debug messages for FXML loading and stage setup.
+     * Loads an FXML file, sets it as the scene for a given stage, and performs
+     * an optional action on the loaded controller.
      *
-     * @param fxmlPath The path to the FXML file relative to the classpath.
+     * @param fxmlPath The path to the FXML file (e.g., "/screens/myscreen.fxml").
      * @param title The title for the stage.
-     * @param stage The stage to set the scene on.
-     * @param configurator An optional configurator to set properties on the controller. Can be {@code null}.
+     * @param stage The {@link Stage} to set the scene on.
+     * @param controllerConsumer An optional {@link SceneControllerConfigurator} to perform actions on the controller.
+     * @return The {@link FXMLLoader} instance that loaded the FXML, allowing access to the controller.
      * @throws IOException If the FXML file cannot be loaded.
      */
-    public static void loadAndSetScene(String fxmlPath, String title, Stage stage, SceneControllerConfigurator configurator) throws IOException {
+    public static FXMLLoader loadAndSetScene(String fxmlPath, String title, Stage stage, SceneControllerConfigurator controllerConsumer) throws IOException {
+        Logger.debug("Loading FXML: {}", fxmlPath);
         FXMLLoader loader = new FXMLLoader(GuiUtils.class.getResource(fxmlPath));
-        Scene scene;
-        try {
-            scene = new Scene(loader.load());
-            Logger.debug("FXML file '{}' loaded successfully.", fxmlPath);
-        } catch (IOException e) {
-            Logger.error("Failed to load FXML file '{}': {}", fxmlPath, e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            Logger.error("An unexpected error occurred while loading FXML file '{}': {}", fxmlPath, e.getMessage(), e);
-            throw new IOException("Unexpected error loading FXML: " + fxmlPath, e);
+        Parent root = loader.load();
+
+        if (controllerConsumer != null) {
+            controllerConsumer.configure(loader.getController());
         }
 
-        if (configurator != null) {
-            configurator.configure(loader.getController());
-        }
-
+        stage.setScene(new Scene(root));
         stage.setTitle(title);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        GuiUtils.setStageIcon(stage, GuiUtils.class);
         stage.show();
-        Logger.debug("Stage '{}' configured and shown for FXML: {}.", title, fxmlPath);
+        Logger.debug("Scene set for stage with title: {}", title);
+
+        return loader;
     }
 }

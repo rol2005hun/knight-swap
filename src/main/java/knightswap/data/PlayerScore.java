@@ -1,5 +1,7 @@
 package knightswap.data;
 
+import org.tinylog.Logger;
+
 /**
  * Represents a player's record in the Knight Swap game, holding their name and best score.
  * The {@code bestScore} signifies the fewest moves taken to solve the puzzle.
@@ -17,6 +19,7 @@ public class PlayerScore {
     public PlayerScore(String playerName, int bestScore) {
         this.playerName = playerName;
         this.bestScore = bestScore;
+        Logger.debug("PlayerScore created for player '{}' with best score {}.", playerName, bestScore);
     }
 
     /**
@@ -40,10 +43,11 @@ public class PlayerScore {
     /**
      * Updates the player's best score.
      *
-     * @param bestScore The new {@code int} best score to be set.
+     * @param newScore The new {@code int} best score to be set.
      */
-    public void setBestScore(int bestScore) {
-        this.bestScore = bestScore;
+    public void setBestScore(int newScore) {
+        this.bestScore = newScore;
+        Logger.debug("Best score for player '{}' updated from {} to {}.", playerName, this.bestScore, newScore);
     }
 
     /**

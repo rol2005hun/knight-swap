@@ -2,6 +2,7 @@ package knightswap.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import org.tinylog.Logger;
 
@@ -27,7 +28,7 @@ public class ScoreBoardManager {
     private static final Path SCORE_FILE_PATH = Paths.get("scores.json");
 
     private final Gson gson;
-    private static List<PlayerScore> playerScores;
+    private List<PlayerScore> playerScores;
 
     /**
      * Constructs a new {@code ScoreBoardManager}.
@@ -63,8 +64,8 @@ public class ScoreBoardManager {
         } catch (IOException e) {
             Logger.error("Failed to load scores from file '{}': {}. Initializing with an empty score list.", SCORE_FILE_PATH, e.getMessage(), e);
             playerScores = new ArrayList<>();
-        } catch (Exception e) {
-            Logger.error("An unexpected error occurred while parsing scores from file '{}': {}. Initializing with an empty score list.", SCORE_FILE_PATH, e.getMessage(), e);
+        } catch (JsonSyntaxException e) {
+            Logger.error("Failed to parse scores from file '{}' (invalid JSON): {}. Initializing with an empty score list.", SCORE_FILE_PATH, e.getMessage(), e);
             playerScores = new ArrayList<>();
         }
     }
@@ -127,7 +128,7 @@ public class ScoreBoardManager {
      * @param limit The {@code int} maximum number of top scores to return.
      * @return A {@link List} of {@link PlayerScore} objects representing the top scores.
      */
-    public static List<PlayerScore> getTopScores(int limit) {
+    public List<PlayerScore> getTopScores(int limit) {
         return playerScores.stream()
                 .sorted(Comparator.comparingInt(PlayerScore::getBestScore))
                 .limit(limit)

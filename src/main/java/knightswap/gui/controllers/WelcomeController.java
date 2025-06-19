@@ -31,7 +31,6 @@ public class WelcomeController {
 
         if (!playerName.isEmpty()) {
             try {
-                KnightSwapController.setPlayerName(playerName);
                 KnightSwapApplication.showGameScreen(playerName);
                 Logger.info("Game screen successfully loaded for player: {}", playerName);
             } catch (Exception e) {

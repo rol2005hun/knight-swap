@@ -26,7 +26,7 @@ public record Position(int row, int col) {
     /**
      * Checks if this {@code Position} represents a valid knight's move target
      * from a given starting {@code Position}. A move is valid if the absolute
-     * difference in rows is 2 and columns is 1, or vice-versa.
+     * difference in rows is 2 and columns is 1, or vice versa.
      *
      * @param from The starting {@link Position} of the knight.
      * @return {@code true} if this position is a valid knight move from {@code from}, {@code false} otherwise.
