@@ -71,7 +71,7 @@ To begin, enter your name into the designated field and then click the "Start Ga
 
 Upon successful game launch, the **Main game screen** will appear:
 
-![Main screen](https://i.imgur.com/cFXpXya.png)
+![Main screen](https://i.imgur.com/XsC85BI.png)
 
 To make a move, first click on the cell containing the knight you wish to move. Your second click will designate the empty destination cell where you want to place the knight.
 
@@ -84,6 +84,14 @@ A valid initial cell selection (i.e., clicking on a knight that can potentially 
 If the move you attempt is legal, the knight will be placed at the destination. Additionally, you will receive real-time feedback from the game regarding the move's validity and status:
 
 ![Main screen - Comments](https://i.imgur.com/pCEWR6h.png)
+
+If you need assistance with the game rules, objectives, or the board's coordinate system, simply click the "Help" button, located on the Main screen.
+
+![Help screen - Comments](https://i.imgur.com/SleY1C3.png)
+
+To see how you stack up against other players or to view the best solutions achieved, click the "Leaderboard" button on the Main screen. This feature allows you to track and compare performance among users.
+
+![Leaderboard - Comments](https://i.imgur.com/L9DHe6M.png)
 
 ## Solution Steps
 

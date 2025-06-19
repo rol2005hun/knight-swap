@@ -53,6 +53,7 @@ public class HelpController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         Logger.info("Help screen controller initializing.");
         String solution = """
+            (fromX, fromY) -> (toX, toY)
             (3, 0) -> (1, 1)
             (0, 1) -> (2, 2)
             (3, 2) -> (2, 0)
