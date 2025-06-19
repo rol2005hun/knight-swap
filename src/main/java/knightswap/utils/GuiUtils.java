@@ -139,6 +139,7 @@ public class GuiUtils {
 
         stage.setScene(new Scene(root));
         stage.setTitle(title);
+        stage.setResizable(false);
         stage.show();
         Logger.debug("Scene set for stage with title: {}", title);
 

@@ -35,7 +35,7 @@
                 </font>
             </Label>
             <TextFlow prefWidth="200.0">
-                <Text fill="WHITE" text="On a 4-row, 3-column chessboard, place 3 dark knights in the top row and 3 light knights in the bottom row. Swap the figures so that they can move in a regular knight's move, and cannot move to a square attacked by an opposing colored piece. Dark and light figures must move alternately (light begins)." wrappingWidth="200.0">
+                <Text fill="WHITE" text="The game takes place on a 4-row, 3-column chessboard. Initially, 3 dark knights are on the top row and 3 light knights are on the bottom row. The objective is to swap their positions using regular knight moves. Knights cannot move to a square attacked by an opposing colored piece. Dark and light figures must move alternately, with light beginning." wrappingWidth="200.0">
                     <font>
                         <Font size="14.0" />
                     </font>
