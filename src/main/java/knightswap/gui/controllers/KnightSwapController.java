@@ -19,6 +19,7 @@ import org.tinylog.Logger;
 import knightswap.KnightSwapState;
 import knightswap.utils.PieceType;
 import knightswap.utils.Position;
+import puzzle.TwoPhaseMoveState;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -173,22 +174,21 @@ public class KnightSwapController {
      * @param clickedPosition The {@link Position} of the clicked button on the board.
      */
     private void handleFirstClick(Button clickedButton, Position clickedPosition) {
-        char pieceAtClickedPos = gameState.getPieceAt(clickedPosition.row(), clickedPosition.col());
-
-        if ((gameState.getCurrentPlayer() == PieceType.LIGHT && pieceAtClickedPos == PieceType.LIGHT.getSymbol()) ||
-                (gameState.getCurrentPlayer() == PieceType.DARK && pieceAtClickedPos == PieceType.DARK.getSymbol())) {
-
+        if (gameState.isLegalToMoveFrom(clickedPosition)) {
             firstClickButton = clickedButton;
             firstClickPosition = clickedPosition;
             firstClickButton.setStyle(HIGHLIGHT_STYLE);
             statusLabel.setText("Selected: (" + clickedPosition.row() + ", " + clickedPosition.col() + "). Choose target.");
             Logger.info("Piece selected at {}. Current player: {}.", clickedPosition, gameState.getCurrentPlayer());
-        } else if (pieceAtClickedPos == '.') {
-            statusLabel.setText("Empty square! Select a piece.");
-            Logger.debug("Clicked on empty square at {}. No piece selected.", clickedPosition);
         } else {
-            statusLabel.setText("Not your piece! (" + gameState.getCurrentPlayer() + " to move)");
-            Logger.warn("Clicked on opponent's piece ({}) at {}. Current player: {}.", pieceAtClickedPos, clickedPosition, gameState.getCurrentPlayer());
+            char pieceAtClickedPos = gameState.getPieceAt(clickedPosition.row(), clickedPosition.col());
+            if (pieceAtClickedPos == '.') {
+                statusLabel.setText("Empty square! Select a piece.");
+                Logger.debug("Clicked on empty square at {}. No piece selected.", clickedPosition);
+            } else {
+                statusLabel.setText("Not your piece! (" + gameState.getCurrentPlayer() + " to move)");
+                Logger.warn("Clicked on opponent's piece ({}) at {}. Current player: {}.", pieceAtClickedPos, clickedPosition, gameState.getCurrentPlayer());
+            }
         }
     }
 
@@ -206,16 +206,13 @@ public class KnightSwapController {
             statusLabel.setText("Selection cancelled.");
             Logger.info("Selection at {} cancelled.", clickedPosition);
         } else {
-            String moveString = String.format("%d %d %d %d",
-                    firstClickPosition.row(), firstClickPosition.col(),
-                    clickedPosition.row(), clickedPosition.col());
+            TwoPhaseMoveState.TwoPhaseMove<Position> currentMove = new TwoPhaseMoveState.TwoPhaseMove<>(firstClickPosition, clickedPosition);
 
-            Logger.debug("Attempting to move from {} to {}. Move string: {}", firstClickPosition, clickedPosition, moveString);
-            if (gameState.isLegalMove(moveString)) {
-                gameState.makeMove(moveString);
+            Logger.debug("Attempting to move from {} to {}. Move: {}", firstClickPosition, clickedPosition, currentMove);
+            if (gameState.isLegalMove(currentMove)) {
+                gameState.makeMove(currentMove);
                 movesMade++;
-                Logger.info("Successful move from {} to {}. Moves made: {}. Next player: {}.",
-                        firstClickPosition, clickedPosition, movesMade, gameState.getCurrentPlayer());
+                Logger.info("Successful move from {} to {}. Moves made: {}. Next player: {}.", firstClickPosition, clickedPosition, movesMade, gameState.getCurrentPlayer());
 
                 resetSelection();
                 updateBoard();
@@ -357,8 +354,8 @@ public class KnightSwapController {
             statusLabel.setText("Congratulations! Puzzle solved.");
             Logger.debug("Status label set to 'Puzzle solved'.");
         } else {
-            statusLabel.setText(String.format("%s to move.", gameState.getCurrentPlayer() == PieceType.LIGHT ? "Light" : "Dark"));
-            Logger.debug("Status label set to indicate current player: {}.", gameState);
+            statusLabel.setText(String.format("%s to move.", gameState.getCurrentPlayer()));
+            Logger.debug("Status label set to indicate current player: {}.", gameState.getCurrentPlayer());
         }
 
         currentScoreLabel.setText(String.valueOf(movesMade));

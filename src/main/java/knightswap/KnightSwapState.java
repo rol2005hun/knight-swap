@@ -1,6 +1,6 @@
 package knightswap;
 
-import puzzle.State;
+import puzzle.TwoPhaseMoveState;
 import org.tinylog.Logger;
 
 import java.util.Arrays;
@@ -10,7 +10,6 @@ import java.util.Set;
 
 import knightswap.utils.PieceType;
 import knightswap.utils.Position;
-import knightswap.utils.ParsedMove;
 
 /**
  * Represents the current state of the Knight Swap puzzle on a 4x3 board.
@@ -19,7 +18,7 @@ import knightswap.utils.ParsedMove;
  * Players (Light then Dark) take turns moving their knights. A move is valid if it's a standard
  * knight's move to an empty square that is not attacked by an opposing knight.
  */
-public class KnightSwapState implements State<String> {
+public class KnightSwapState implements TwoPhaseMoveState<Position> {
     /**
      * The board representation, where 'D' is a dark knight, 'L' is a light knight, and '.' is an empty square.
      */
@@ -88,6 +87,18 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
+     * Returns the character symbol representing the piece at the specified board position.
+     * Overloaded method for {@link Position} object.
+     *
+     * @param p The {@link Position} object.
+     * @return The {@code char} symbol of the piece ('D', 'L', or '.').
+     * @throws IllegalArgumentException If the provided position is out of the board's bounds.
+     */
+    public char getPieceAt(Position p) {
+        return getPieceAt(p.row(), p.col());
+    }
+
+    /**
      * {@inheritDoc}
      * Determines if the puzzle has reached its solved state.
      * The puzzle is solved when all dark knights are in row 3 and all light knights are in row 0.
@@ -112,13 +123,13 @@ public class KnightSwapState implements State<String> {
     /**
      * {@inheritDoc}
      * Generates a set of all legal moves available to the {@link #currentPlayer} from the current board state.
-     * Each move is represented as a {@link String} in the format "startRow startCol endRow endCol".
+     * Each move is represented as a {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object.
      *
-     * @return A {@link Set} of {@link String}s, where each string describes a legal move.
+     * @return A {@link Set} of {@link TwoPhaseMoveState.TwoPhaseMove<Position>} objects, where each describes a legal move.
      */
     @Override
-    public Set<String> getLegalMoves() {
-        Set<String> legalMoves = new HashSet<>();
+    public Set<TwoPhaseMoveState.TwoPhaseMove<Position>> getLegalMoves() {
+        Set<TwoPhaseMoveState.TwoPhaseMove<Position>> legalMoves = new HashSet<>();
         Logger.debug("Generating legal moves for current player: {}.", currentPlayer);
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 3; c++) {
@@ -138,12 +149,13 @@ public class KnightSwapState implements State<String> {
 
                         if (endR >= 0 && endR < 4 && endC >= 0 && endC < 3) {
                             Position end = new Position(endR, endC);
-                            String moveString = String.format("%d %d %d %d", start.row(), start.col(), end.row(), end.col());
-                            if (isLegalMove(moveString)) {
-                                legalMoves.add(moveString);
-                                Logger.trace("Found legal move: {} (from {} to {}).", moveString, start, end);
+                            TwoPhaseMoveState.TwoPhaseMove<Position> twoPhaseMove = new TwoPhaseMoveState.TwoPhaseMove<>(start, end);
+
+                            if (isLegalMove(twoPhaseMove)) {
+                                legalMoves.add(twoPhaseMove);
+                                Logger.trace("Found legal move: {} (from {} to {}).", twoPhaseMove, start, end);
                             } else {
-                                Logger.trace("Move {} (from {} to {}) is not legal.", moveString, start, end);
+                                Logger.trace("Move {} (from {} to {}) is not legal.", twoPhaseMove, start, end);
                             }
                         }
                     }
@@ -155,72 +167,66 @@ public class KnightSwapState implements State<String> {
     }
 
     /**
-     * Parses a string representation of a move into a {@link ParsedMove} object.
-     * The expected format is "{@code startRow startCol endRow endCol}".
+     * {@inheritDoc}
+     * Checks if it is possible to make a move from the specified starting {@link Position}.
+     * A move is legal from this position if:
+     * <ul>
+     * <li>It contains the {@link #currentPlayer}'s piece.</li>
+     * </ul>
+     * This method does not check the destination, only the source.
      *
-     * @param moveString The {@link String} representing the move.
-     * @return A {@link ParsedMove} object if parsing is successful and coordinates are valid,
-     * otherwise {@code null}.
+     * @param from Represents the starting {@link Position} of the move.
+     * @return {@code true} if a move can be initiated from {@code from}, {@code false} otherwise.
      */
-    private ParsedMove parseMoveString(String moveString) {
-        Logger.debug("Attempting to parse move string: '{}'.", moveString);
-        try {
-            String[] parts = moveString.split(" ");
-            if (parts.length != 4) {
-                Logger.warn("Invalid move format: {}. Expected 'startRow startCol endRow endCol'.", moveString);
-                return null;
-            }
-
-            int startRow = Integer.parseInt(parts[0]);
-            int startCol = Integer.parseInt(parts[1]);
-            int endRow = Integer.parseInt(parts[2]);
-            int endCol = Integer.parseInt(parts[3]);
-
-            Position start = new Position(startRow, startCol);
-            Position end = new Position(endRow, endCol);
-
-            Logger.debug("Move string '{}' parsed successfully to start: {}, end: {}.", moveString, start, end);
-            return new ParsedMove(start, end);
-        } catch (NumberFormatException e) {
-            Logger.error("Error parsing move coordinates for move '{}': {}", moveString, e.getMessage(), e);
-            return null;
-        } catch (IllegalArgumentException e) {
-            Logger.warn("Move string contains out-of-bounds coordinates: {}. Error: {}", moveString, e.getMessage());
-            return null;
+    @Override
+    public boolean isLegalToMoveFrom(Position from) {
+        if (from.row() < 0 || from.row() >= 4 || from.col() < 0 || from.col() >= 3) {
+            Logger.warn("Attempted to check legality from out of bounds position: {}.", from);
+            return false;
         }
+        char piece = getPieceAt(from);
+        boolean isCurrentPlayerPiece = (currentPlayer == PieceType.LIGHT && piece == PieceType.LIGHT.getSymbol()) ||
+                (currentPlayer == PieceType.DARK && piece == PieceType.DARK.getSymbol());
+        Logger.debug("Checking isLegalToMoveFrom {}. Piece: {}, CurrentPlayer: {}. Result: {}.", from, piece, currentPlayer, isCurrentPlayerPiece);
+        return isCurrentPlayerPiece;
     }
+
 
     /**
      * {@inheritDoc}
-     * Checks if a given move, specified as a string, is legal according to the game rules.
+     * Checks if a given move, specified as a {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object, is legal according to the game rules.
      * A move is legal if:
      * <ul>
-     * <li>It corresponds to the {@link #currentPlayer}'s piece.</li>
+     * <li>The starting position contains the {@link #currentPlayer}'s piece.</li>
      * <li>The target square is empty.</li>
-     * <li>It is a valid knight's move.</li>
+     * <li>It is a valid knight's move from start to end.</li>
      * <li>The target square is not attacked by an opposing knight.</li>
      * </ul>
      *
-     * @param moveString A {@link String} representing the move (e.g., "0 0 1 2").
+     * @param move A {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object representing the move.
      * @return {@code true} if the move is legal, {@code false} otherwise.
      */
     @Override
-    public boolean isLegalMove(String moveString) {
-        Logger.debug("Checking legality of move: '{}'. Current player: {}.", moveString, currentPlayer);
-        ParsedMove parsedMove = parseMoveString(moveString);
-        if (parsedMove == null) {
-            Logger.debug("Move string '{}' could not be parsed, not a legal move.", moveString);
+    public boolean isLegalMove(TwoPhaseMoveState.TwoPhaseMove<Position> move) {
+        Logger.debug("Checking legality of move: '{}'. Current player: {}.", move, currentPlayer);
+        if (move == null || move.from() == null || move.to() == null) {
+            Logger.warn("Move object is null or contains null positions, not a legal move.");
             return false;
         }
 
-        Position start = parsedMove.start();
-        Position end = parsedMove.end();
+        Position start = move.from();
+        Position end = move.to();
 
-        char piece = getPieceAt(start.row(), start.col());
-        char targetPiece = getPieceAt(end.row(), end.col());
+        if (start.row() < 0 || start.row() >= 4 || start.col() < 0 || start.col() >= 3 ||
+                end.row() < 0 || end.row() >= 4 || end.col() < 0 || end.col() >= 3) {
+            Logger.debug("Move {} rejected: start or end position out of bounds.", move);
+            return false;
+        }
 
-        if ((currentPlayer == PieceType.LIGHT && piece != PieceType.LIGHT.getSymbol()) ||
-                (currentPlayer == PieceType.DARK && piece != PieceType.DARK.getSymbol())) {
+        char piece = getPieceAt(start);
+        char targetPiece = getPieceAt(end);
+
+        if (!isLegalToMoveFrom(start)) {
             Logger.debug("Move from {} (piece: {}) rejected: not current player's piece or empty square. Current player: {}.", start, piece, currentPlayer);
             return false;
         }
@@ -241,7 +247,7 @@ public class KnightSwapState implements State<String> {
             return false;
         }
 
-        Logger.debug("Move '{}' from {} to {} is legal for player {}.", moveString, start, end, currentPlayer);
+        Logger.debug("Move '{}' from {} to {} is legal for player {}.", move, start, end, currentPlayer);
         return true;
     }
 
@@ -280,34 +286,28 @@ public class KnightSwapState implements State<String> {
     /**
      * {@inheritDoc}
      * Applies the specified move to the current board state.
-     * This method assumes the move has already been validated as legal by {@link #isLegalMove(String)}.
+     * This method assumes the move has already been validated as legal by {@link #isLegalMove(TwoPhaseMoveState.TwoPhaseMove)}.
      * After the move, the {@link #currentPlayer} is switched to the opponent.
      *
-     * @param moveString A {@link String} representing the move (e.g., "0 0 1 2").
-     * @throws IllegalArgumentException If the move string is illegal or cannot be parsed.
+     * @param move A {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object representing the move.
+     * @throws IllegalArgumentException If the move is illegal or invalid.
      */
     @Override
-    public void makeMove(String moveString) {
-        Logger.info("Attempting to make move: '{}' for player {}.", moveString, currentPlayer);
-        if (!isLegalMove(moveString)) {
-            Logger.error("Cannot make move '{}' as it is not legal. Throwing IllegalArgumentException.", moveString);
-            throw new IllegalArgumentException("Illegal move: " + moveString);
+    public void makeMove(TwoPhaseMoveState.TwoPhaseMove<Position> move) {
+        Logger.info("Attempting to make move: '{}' for player {}.", move, currentPlayer);
+        if (!isLegalMove(move)) {
+            Logger.error("Cannot make move '{}' as it is not legal. Throwing IllegalArgumentException.", move);
+            throw new IllegalArgumentException("Illegal move: " + move);
         }
 
-        ParsedMove parsedMove = parseMoveString(moveString);
-        if (parsedMove == null) {
-            Logger.error("Cannot make move '{}' as it could not be parsed. This should not happen if isLegalMove was called first. Throwing IllegalArgumentException.", moveString);
-            throw new IllegalArgumentException("Invalid move string provided to makeMove: " + moveString);
-        }
-
-        Position start = parsedMove.start();
-        Position end = parsedMove.end();
+        Position start = move.from();
+        Position end = move.to();
 
         char piece = board[start.row()][start.col()];
         board[start.row()][start.col()] = '.';
         board[end.row()][end.col()] = piece;
 
-        Logger.info("Move successfully made: {} {} -> {} {} (Piece: {}).", start.row(), start.col(), end.row(), end.col(), piece);
+        Logger.info("Move successfully made: {} -> {} (Piece: {}).", start, end, piece);
         currentPlayer = currentPlayer.opponent();
         Logger.debug("Current player switched to {}.", currentPlayer);
     }
@@ -321,14 +321,15 @@ public class KnightSwapState implements State<String> {
         return currentPlayer;
     }
 
+
     /**
      * {@inheritDoc}
      * Creates and returns a deep copy of this {@code KnightSwapState} instance.
      *
-     * @return A new {@link State} object that is an independent copy of the current state.
+     * @return A new {@link TwoPhaseMoveState} object that is an independent copy of the current state.
      */
     @Override
-    public State<String> clone() {
+    public TwoPhaseMoveState<Position> clone() {
         Logger.debug("Cloning KnightSwapState.");
         return new KnightSwapState(this);
     }

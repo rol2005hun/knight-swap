@@ -1,10 +1,10 @@
 package knightswap;
 
-import knightswap.utils.ParsedMove;
 import knightswap.utils.PieceType;
 import knightswap.utils.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import puzzle.TwoPhaseMoveState;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,7 +41,7 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void testInitialCurrentPlayer() {
+    void testInitialNextPlayer() {
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
     }
 
@@ -102,21 +102,21 @@ class KnightSwapStateTest {
 
     @Test
     void testGetLegalMovesInitialState() {
-        Set<String> expectedMoves = new HashSet<>();
-        expectedMoves.add("3 0 1 1");
-        expectedMoves.add("3 2 1 1");
+        Set<TwoPhaseMoveState.TwoPhaseMove<Position>> expectedMoves = new HashSet<>();
+        expectedMoves.add(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
+        expectedMoves.add(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 2), new Position(1, 1)));
 
         assertEquals(expectedMoves, initialState.getLegalMoves());
     }
 
     @Test
     void testGetLegalMovesAfterOneMove() {
-        initialState.makeMove("3 0 1 1");
-        Set<String> expectedMoves = new HashSet<>();
+        initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
+        Set<TwoPhaseMoveState.TwoPhaseMove<Position>> expectedMoves = new HashSet<>();
 
-        expectedMoves.add("0 0 2 1");
-        expectedMoves.add("0 1 2 2");
-        expectedMoves.add("0 2 2 1");
+        expectedMoves.add(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(2, 1)));
+        expectedMoves.add(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 1), new Position(2, 2)));
+        expectedMoves.add(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 2), new Position(2, 1)));
 
         assertEquals(expectedMoves.size(), initialState.getLegalMoves().size());
         assertTrue(initialState.getLegalMoves().containsAll(expectedMoves));
@@ -138,29 +138,29 @@ class KnightSwapStateTest {
 
     @Test
     void testIsLegalMoveValidInitialMoves() {
-        assertTrue(initialState.isLegalMove("3 0 1 1"));
-        assertTrue(initialState.isLegalMove("3 2 1 1"));
+        assertTrue(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1))));
+        assertTrue(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 2), new Position(1, 1))));
     }
 
     @Test
     void testIsLegalMoveOpponentPiece() {
-        assertFalse(initialState.isLegalMove("0 0 1 2"));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(1, 2))));
     }
 
     @Test
     void testIsLegalMoveEmptySquare() {
-        assertFalse(initialState.isLegalMove("1 0 3 1"));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(1, 0), new Position(3, 1))));
     }
 
     @Test
     void testIsLegalMoveToOccupiedSquare() {
-        assertFalse(initialState.isLegalMove("3 0 3 1"));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(3, 1))));
     }
 
     @Test
     void testIsLegalMoveNotKnightMove() {
-        assertFalse(initialState.isLegalMove("3 0 2 0"));
-        assertFalse(initialState.isLegalMove("3 0 2 1"));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(2, 0))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(2, 1))));
     }
 
     @Test
@@ -170,26 +170,12 @@ class KnightSwapStateTest {
         stateForAttackTest.board[0][0] = PieceType.DARK.getSymbol();
         stateForAttackTest.board[3][0] = PieceType.LIGHT.getSymbol();
 
-        assertFalse(stateForAttackTest.isLegalMove("3 0 2 1"));
-    }
-
-    @Test
-    void testIsLegalMoveInvalidFormat() {
-        assertFalse(initialState.isLegalMove("3 0 1"));
-        assertFalse(initialState.isLegalMove("3 0 1 1 5"));
-        assertFalse(initialState.isLegalMove("A 0 1 1"));
-        assertFalse(initialState.isLegalMove("3 0 1 Z"));
-    }
-
-    @Test
-    void testIsLegalMoveOutOfBoundsCoordinatesInString() {
-        assertFalse(initialState.isLegalMove("-1 0 1 1"));
-        assertFalse(initialState.isLegalMove("3 0 5 1"));
+        assertFalse(stateForAttackTest.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(2, 1))));
     }
 
     @Test
     void testMakeMoveLegalMove() {
-        String move = "3 0 1 1";
+        TwoPhaseMoveState.TwoPhaseMove<Position> move = new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1));
         initialState.makeMove(move);
 
         assertEquals('.', initialState.getPieceAt(3, 0));
@@ -209,7 +195,7 @@ class KnightSwapStateTest {
 
     @Test
     void testMakeMoveIllegalMove() {
-        String illegalMove = "0 0 1 2";
+        TwoPhaseMoveState.TwoPhaseMove<Position> illegalMove = new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(1, 2));
 
         assertThrows(IllegalArgumentException.class, () -> initialState.makeMove(illegalMove), "makeMove should throw IllegalArgumentException for an illegal move.");
 
@@ -239,7 +225,7 @@ class KnightSwapStateTest {
     @Test
     void testEqualsDifferentPlayers() {
         KnightSwapState otherState = new KnightSwapState();
-        initialState.makeMove("3 0 1 1");
+        initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
         assertNotEquals(initialState, otherState);
     }
 
@@ -254,7 +240,7 @@ class KnightSwapStateTest {
         KnightSwapState otherState = new KnightSwapState();
         assertEquals(initialState.hashCode(), otherState.hashCode());
 
-        initialState.makeMove("3 0 1 1");
+        initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
         KnightSwapState stateAfterMove = (KnightSwapState) initialState.clone();
         assertEquals(initialState.hashCode(), stateAfterMove.hashCode());
     }
@@ -281,7 +267,7 @@ class KnightSwapStateTest {
 
     @Test
     void testToStringAfterMove() {
-        initialState.makeMove("3 0 1 1");
+        initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
         String expectedAfterMoveString = """
                 Current turn: DARK
                 Board:
@@ -294,55 +280,12 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void testGetCurrentPlayer() {
+    void testGetNextPlayer() {
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
-        initialState.makeMove("3 0 1 1");
+        initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
         assertEquals(PieceType.DARK, initialState.getCurrentPlayer());
-        initialState.makeMove("0 0 2 1");
+        initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(2, 1)));
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
-    }
-
-    @Test
-    void testParseMoveStringValid() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method parseMethod = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
-        parseMethod.setAccessible(true);
-
-        ParsedMove validMove = (ParsedMove) parseMethod.invoke(initialState, "0 0 1 2");
-        assertNotNull(validMove);
-        assertEquals(new Position(0, 0), validMove.start());
-        assertEquals(new Position(1, 2), validMove.end());
-
-        validMove = (ParsedMove) parseMethod.invoke(initialState, "3 2 1 1");
-        assertNotNull(validMove);
-        assertEquals(new Position(3, 2), validMove.start());
-        assertEquals(new Position(1, 1), validMove.end());
-    }
-
-    @Test
-    void testParseMoveStringInvalidFormat() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method parseMethod = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
-        parseMethod.setAccessible(true);
-
-        assertNull(parseMethod.invoke(initialState, "0 0 1"));
-        assertNull(parseMethod.invoke(initialState, "0 0 1 2 3"));
-        assertNull(parseMethod.invoke(initialState, "A 0 1 2"));
-        assertNull(parseMethod.invoke(initialState, "0 0 B 2"));
-        assertNull(parseMethod.invoke(initialState, "0.5 0 1 2"));
-    }
-
-    @Test
-    void testParseMoveStringOutOfBoundsCoordinates() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method parseMethod = KnightSwapState.class.getDeclaredMethod("parseMoveString", String.class);
-        parseMethod.setAccessible(true);
-
-        assertNull(parseMethod.invoke(initialState, "-1 0 1 2"));
-        assertNull(parseMethod.invoke(initialState, "0 -1 1 2"));
-        assertNull(parseMethod.invoke(initialState, "4 0 1 2"));
-        assertNull(parseMethod.invoke(initialState, "0 3 1 2"));
-        assertNull(parseMethod.invoke(initialState, "0 0 -1 2"));
-        assertNull(parseMethod.invoke(initialState, "0 0 1 -1"));
-        assertNull(parseMethod.invoke(initialState, "0 0 4 2"));
-        assertNull(parseMethod.invoke(initialState, "0 0 1 3"));
     }
 
     @Test
@@ -353,6 +296,7 @@ class KnightSwapStateTest {
         assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(1, 1), PieceType.DARK));
 
         KnightSwapState stateForAttackTest = new KnightSwapState();
+        for (int r = 0; r < 4; r++) Arrays.fill(stateForAttackTest.board[r], '.');
         stateForAttackTest.board[0][0] = PieceType.DARK.getSymbol();
         stateForAttackTest.board[2][1] = '.';
         stateForAttackTest.board[3][0] = '.';

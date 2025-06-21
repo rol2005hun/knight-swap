@@ -1,5 +1,7 @@
 package knightswap;
 
+import puzzle.TwoPhaseMoveState;
+import knightswap.utils.Position;
 import puzzle.solver.BreadthFirstSearch;
 import puzzle.solver.Node;
 import org.tinylog.Logger;
@@ -30,15 +32,15 @@ public final class ConsoleGame {
         KnightSwapState initialState = new KnightSwapState();
         Logger.debug("Initial state created:\n{}", initialState);
 
-        BreadthFirstSearch<String> bfsSolver = new BreadthFirstSearch<>();
+        BreadthFirstSearch<TwoPhaseMoveState.TwoPhaseMove<Position>> bfsSolver = new BreadthFirstSearch<>();
 
         Logger.info("Starting Breadth-First Search to solve the puzzle...");
 
-        Optional<Node<String>> solution = bfsSolver.solveAndPrintSolution(initialState);
+        Optional<Node<TwoPhaseMoveState.TwoPhaseMove<Position>>> solution = bfsSolver.solveAndPrintSolution(initialState);
         Logger.debug("BFS solution process completed.");
 
         if (solution.isPresent()) {
-            Node<String> solutionNode = solution.get();
+            Node<TwoPhaseMoveState.TwoPhaseMove<Position>> solutionNode = solution.get();
             int steps = calculatePathLength(solutionNode);
             Logger.info("Solution found! Number of steps: {}.", steps);
         } else {
