@@ -171,13 +171,4 @@ public class KnightSwapApplication extends Application {
             Logger.warn("ScoreBoardManager was null on shutdown, no scores to save.");
         }
     }
-
-    /**
-     * The main method to launch the JavaFX application.
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
