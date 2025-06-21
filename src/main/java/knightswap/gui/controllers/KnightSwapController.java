@@ -107,14 +107,6 @@ public class KnightSwapController {
         boardGrid.getRowConstraints().clear();
         Logger.debug("Clearing existing GridPane children and constraints for dynamic setup.");
 
-        for (int col = 0; col < BOARD_COLS; col++) {
-            ColumnConstraints colConst = new ColumnConstraints();
-            colConst.setPrefWidth(BUTTON_SIZE);
-            colConst.setHgrow(Priority.ALWAYS);
-            boardGrid.getColumnConstraints().add(colConst);
-        }
-        Logger.debug("Column constraints for {} columns set.", BOARD_COLS);
-
         for (int row = 0; row < BOARD_ROWS; row++) {
             RowConstraints rowConst = new RowConstraints();
             rowConst.setPrefHeight(BUTTON_SIZE);
@@ -122,6 +114,14 @@ public class KnightSwapController {
             boardGrid.getRowConstraints().add(rowConst);
         }
         Logger.debug("Row constraints for {} rows set.", BOARD_ROWS);
+
+        for (int col = 0; col < BOARD_COLS; col++) {
+            ColumnConstraints colConst = new ColumnConstraints();
+            colConst.setPrefWidth(BUTTON_SIZE);
+            colConst.setHgrow(Priority.ALWAYS);
+            boardGrid.getColumnConstraints().add(colConst);
+        }
+        Logger.debug("Column constraints for {} columns set.", BOARD_COLS);
 
         for (int row = 0; row < BOARD_ROWS; row++) {
             for (int col = 0; col < BOARD_COLS; col++) {
