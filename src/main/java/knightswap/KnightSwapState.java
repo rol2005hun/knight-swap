@@ -22,7 +22,7 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
     /**
      * The board representation, where 'D' is a dark knight, 'L' is a light knight, and '.' is an empty square.
      */
-    final char[][] board;
+    char[][] board;
 
     /**
      * The {@link PieceType} of the player whose turn it is to move next.
@@ -52,22 +52,6 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
         this.currentPlayer = PieceType.LIGHT;
         Logger.info("KnightSwap puzzle initial state created. Current player: {}.", currentPlayer);
         Logger.debug("Initial board state:\n{}", this.toString());
-    }
-
-    /**
-     * Creates a new {@code KnightSwapState} by performing a deep copy of another {@code KnightSwapState} instance.
-     * This constructor is essential for state-space search algorithms (like BFS) to explore different paths
-     * without altering the original state.
-     *
-     * @param other The {@code KnightSwapState} instance to be copied.
-     */
-    public KnightSwapState(KnightSwapState other) {
-        this.board = new char[4][3];
-        for (int i = 0; i < 4; i++) {
-            System.arraycopy(other.board[i], 0, this.board[i], 0, 3);
-        }
-        this.currentPlayer = other.currentPlayer;
-        Logger.debug("KnightSwapState deep copy created. Current player: {}.", currentPlayer);
     }
 
     /**
@@ -330,8 +314,19 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
      */
     @Override
     public TwoPhaseMoveState<Position> clone() {
-        Logger.debug("Cloning KnightSwapState.");
-        return new KnightSwapState(this);
+        try {
+            KnightSwapState clonedState = (KnightSwapState) super.clone();
+
+            clonedState.board = new char[this.board.length][];
+            for (int i = 0; i < this.board.length; i++) {
+                clonedState.board[i] = Arrays.copyOf(this.board[i], this.board[i].length);
+            }
+
+            Logger.debug("Cloning KnightSwapState using super.clone() and deep copy.");
+            return clonedState;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("CloneNotSupportedException should not occur as Cloneable is implemented.", e);
+        }
     }
 
     /**
