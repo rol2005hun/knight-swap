@@ -63,7 +63,7 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
      * @throws IllegalArgumentException If the provided row or column is out of the board's bounds.
      */
     public char getPieceAt(int row, int col) {
-        if (row < 0 || row >= 4 || col < 0 || col >= 3) {
+        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) {
             Logger.error("Attempted to access out of bounds board position: ({}, {}).", row, col);
             throw new IllegalArgumentException("Position out of bounds: (" + row + ", " + col + ")");
         }
@@ -115,13 +115,14 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
     public Set<TwoPhaseMoveState.TwoPhaseMove<Position>> getLegalMoves() {
         Set<TwoPhaseMoveState.TwoPhaseMove<Position>> legalMoves = new HashSet<>();
         Logger.debug("Generating legal moves for current player: {}.", currentPlayer);
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 3; c++) {
-                char piece = getPieceAt(r, c);
+        for (int r = 0; r < board.length; r++) {
+            for (int c = 0; c < board[0].length; c++) {
+                Position start = new Position(r, c);
+                char piece = getPieceAt(start);
+
                 if ((currentPlayer == PieceType.LIGHT && piece == PieceType.LIGHT.getSymbol()) ||
                         (currentPlayer == PieceType.DARK && piece == PieceType.DARK.getSymbol())) {
 
-                    Position start = new Position(r, c);
                     int[][] knightMoves = {
                             {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
                             {1, -2}, {1, 2}, {2, -1}, {2, 1}
@@ -131,8 +132,8 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
                         int endR = start.row() + move[0];
                         int endC = start.col() + move[1];
 
-                        if (endR >= 0 && endR < 4 && endC >= 0 && endC < 3) {
-                            Position end = new Position(endR, endC);
+                        Position end = new Position(endR, endC);
+                        if (end.isValidForBoard(board.length, board[0].length)) {
                             TwoPhaseMoveState.TwoPhaseMove<Position> twoPhaseMove = new TwoPhaseMoveState.TwoPhaseMove<>(start, end);
 
                             if (isLegalMove(twoPhaseMove)) {
@@ -155,6 +156,7 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
      * Checks if it is possible to make a move from the specified starting {@link Position}.
      * A move is legal from this position if:
      * <ul>
+     * <li>The position is within the board bounds.</li>
      * <li>It contains the {@link #currentPlayer}'s piece.</li>
      * </ul>
      * This method does not check the destination, only the source.
@@ -164,7 +166,7 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
      */
     @Override
     public boolean isLegalToMoveFrom(Position from) {
-        if (from.row() < 0 || from.row() >= 4 || from.col() < 0 || from.col() >= 3) {
+        if (!from.isValidForBoard(board.length, board[0].length)) {
             Logger.warn("Attempted to check legality from out of bounds position: {}.", from);
             return false;
         }
@@ -175,12 +177,13 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
         return isCurrentPlayerPiece;
     }
 
-
     /**
      * {@inheritDoc}
      * Checks if a given move, specified as a {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object, is legal according to the game rules.
      * A move is legal if:
      * <ul>
+     * <li>The move object and its positions are not null.</li>
+     * <li>Both the starting and ending positions are within the board bounds (0-3 for row, 0-2 for column).</li>
      * <li>The starting position contains the {@link #currentPlayer}'s piece.</li>
      * <li>The target square is empty.</li>
      * <li>It is a valid knight's move from start to end.</li>
@@ -201,8 +204,7 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
         Position start = move.from();
         Position end = move.to();
 
-        if (start.row() < 0 || start.row() >= 4 || start.col() < 0 || start.col() >= 3 ||
-                end.row() < 0 || end.row() >= 4 || end.col() < 0 || end.col() >= 3) {
+        if (!start.isValidForBoard(board.length, board[0].length) || !end.isValidForBoard(board.length, board[0].length)) {
             Logger.debug("Move {} rejected: start or end position out of bounds.", move);
             return false;
         }
@@ -253,12 +255,10 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
         };
 
         for (int[] move : knightMoves) {
-            int attackerRow = position.row() + move[0];
-            int attackerCol = position.col() + move[1];
-
-            if (attackerRow >= 0 && attackerRow < 4 && attackerCol >= 0 && attackerCol < 3) {
-                if (getPieceAt(attackerRow, attackerCol) == attackerSymbol) {
-                    Logger.debug("Position {} attacked by {} piece at ({}, {}).", position, attackerSymbol, attackerRow, attackerCol);
+            Position attackerPos = new Position(position.row() + move[0], position.col() + move[1]);
+            if (attackerPos.isValidForBoard(board.length, board[0].length)) {
+                if (getPieceAt(attackerPos) == attackerSymbol) {
+                    Logger.debug("Position {} attacked by {} piece at {}.", position, attackerSymbol, attackerPos);
                     return true;
                 }
             }
@@ -304,7 +304,6 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
     public PieceType getCurrentPlayer() {
         return currentPlayer;
     }
-
 
     /**
      * {@inheritDoc}
@@ -373,9 +372,9 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
         StringBuilder sb = new StringBuilder();
         sb.append("Current turn: ").append(currentPlayer).append("\n");
         sb.append("Board:\n");
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 3; j++) {
-                sb.append(board[i][j]).append(" ");
+        for (char[] chars : board) {
+            for (int j = 0; j < board[0].length; j++) {
+                sb.append(chars[j]).append(" ");
             }
             sb.append("\n");
         }

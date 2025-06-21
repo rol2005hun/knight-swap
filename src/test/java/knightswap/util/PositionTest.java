@@ -5,27 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PositionTest {
-
-    @Test
-    void testConstructorValidPositions() {
-        assertDoesNotThrow(() -> new Position(0, 0), "Should not throw for (0,0).");
-        assertDoesNotThrow(() -> new Position(3, 2), "Should not throw for (3,2).");
-        assertDoesNotThrow(() -> new Position(1, 0), "Should not throw for (1,0).");
-        assertDoesNotThrow(() -> new Position(2, 2), "Should not throw for (2,2).");
-    }
-
-    @Test
-    void testConstructorInvalidRows() {
-        assertThrows(IllegalArgumentException.class, () -> new Position(-1, 0), "Should throw for row -1.");
-        assertThrows(IllegalArgumentException.class, () -> new Position(4, 0), "Should throw for row 4.");
-    }
-
-    @Test
-    void testConstructorInvalidColumns() {
-        assertThrows(IllegalArgumentException.class, () -> new Position(0, -1), "Should throw for col -1.");
-        assertThrows(IllegalArgumentException.class, () -> new Position(0, 3), "Should throw for col 3.");
-    }
-
     @Test
     void testIsValidKnightMoveValidMoves() {
         Position from11 = new Position(1, 1);
@@ -67,7 +46,6 @@ class PositionTest {
         assertFalse(new Position(2, 1).isValidKnightMove(from), "Move (1,1) -> (2,1) should be invalid (not a knight move).");
         assertFalse(new Position(0, 1).isValidKnightMove(from), "Move (1,1) -> (0,1) should be invalid (not a knight move).");
     }
-
 
     @Test
     void testToString() {

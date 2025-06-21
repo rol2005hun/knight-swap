@@ -41,7 +41,7 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void testInitialNextPlayer() {
+    void testInitialCurrentPlayer() {
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
     }
 
@@ -101,6 +101,22 @@ class KnightSwapStateTest {
     }
 
     @Test
+    void testIsSolvedOneKnightWrongPosition() {
+        KnightSwapState state = new KnightSwapState();
+        for (int i = 0; i < 4; i++) {
+            Arrays.fill(state.board[i], '.');
+        }
+        state.board[0][0] = PieceType.LIGHT.getSymbol();
+        state.board[0][1] = PieceType.LIGHT.getSymbol();
+        state.board[0][2] = PieceType.DARK.getSymbol();
+        state.board[3][0] = PieceType.DARK.getSymbol();
+        state.board[3][1] = PieceType.DARK.getSymbol();
+        state.board[3][2] = PieceType.LIGHT.getSymbol();
+
+        assertFalse(state.isSolved());
+    }
+
+    @Test
     void testGetLegalMovesInitialState() {
         Set<TwoPhaseMoveState.TwoPhaseMove<Position>> expectedMoves = new HashSet<>();
         expectedMoves.add(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
@@ -137,14 +153,50 @@ class KnightSwapStateTest {
     }
 
     @Test
+    void testIsLegalToMoveFromValid() {
+        assertTrue(initialState.isLegalToMoveFrom(new Position(3, 0)));
+    }
+
+    @Test
+    void testIsLegalToMoveFromInValid() {
+        assertFalse(initialState.isLegalToMoveFrom(new Position(-1, 0)));
+    }
+
+    @Test
+    void testIsLegalToMoveFromOpponentPiece() {
+        assertFalse(initialState.isLegalToMoveFrom(new Position(0, 0)));
+    }
+
+    @Test
+    void testIsLegalToMoveFromEmptySquare() {
+        assertFalse(initialState.isLegalToMoveFrom(new Position(1, 1)));
+    }
+
+    @Test
     void testIsLegalMoveValidInitialMoves() {
         assertTrue(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1))));
         assertTrue(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 2), new Position(1, 1))));
     }
 
     @Test
+    void testIsLegalMoveNullMove() {
+        assertFalse(initialState.isLegalMove(null));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(null, new Position(1, 1))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), null)));
+    }
+
+    @Test
+    void testIsLegalMoveOutOfBoundsCoordinates() {
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(-1, 0), new Position(1, 1))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(5, 1))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, -1), new Position(2, 0))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(1, 3))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(-1, -1), new Position(4, 3))));
+    }
+
+    @Test
     void testIsLegalMoveOpponentPiece() {
-        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(1, 2))));
+        assertFalse(initialState.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(0, 0), new Position(2, 1))));
     }
 
     @Test
@@ -166,11 +218,22 @@ class KnightSwapStateTest {
     @Test
     void testIsLegalMoveTargetAttacked() {
         KnightSwapState stateForAttackTest = new KnightSwapState();
-        for (int r = 0; r < 4; r++) Arrays.fill(stateForAttackTest.board[r], '.');
         stateForAttackTest.board[0][0] = PieceType.DARK.getSymbol();
         stateForAttackTest.board[3][0] = PieceType.LIGHT.getSymbol();
+        assertFalse(stateForAttackTest.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(2, 2))));
+    }
 
-        assertFalse(stateForAttackTest.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(2, 1))));
+    @Test
+    void testIsLegalToMoveFromCurrentPlayerDark() throws NoSuchFieldException, IllegalAccessException {
+        java.lang.reflect.Field currentPlayerField = KnightSwapState.class.getDeclaredField("currentPlayer");
+        currentPlayerField.setAccessible(true);
+        currentPlayerField.set(initialState, PieceType.DARK);
+
+        assertTrue(initialState.isLegalToMoveFrom(new Position(0, 0)), "isLegalToMoveFrom should return true for dark piece when dark player is current.");
+
+        assertFalse(initialState.isLegalToMoveFrom(new Position(3, 0)), "isLegalToMoveFrom should return false for light piece when dark player is current.");
+
+        assertFalse(initialState.isLegalToMoveFrom(new Position(1, 1)), "isLegalToMoveFrom should return false for empty square when dark player is current.");
     }
 
     @Test
@@ -230,9 +293,32 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void testEqualsNullAndDifferentClass() {
-        assertNotEquals(null, initialState);
+    void testEqualsDifferentPlayersButSameBoard() throws NoSuchFieldException, IllegalAccessException {
+        KnightSwapState state1 = new KnightSwapState();
+        KnightSwapState state2 = new KnightSwapState();
+
+        assertEquals(state1, state2);
+
+        java.lang.reflect.Field currentPlayerField = KnightSwapState.class.getDeclaredField("currentPlayer");
+        currentPlayerField.setAccessible(true);
+        currentPlayerField.set(state2, PieceType.DARK);
+
+        assertNotEquals(state1, state2, "States should not be equal if only current players differ but boards are same.");
+    }
+
+    @Test
+    void testEqualsDifferentClass() {
         assertNotEquals(new Object(), initialState);
+    }
+
+    @Test
+    void testEqualsNull() {
+        assertNotEquals(null, initialState);
+    }
+
+    @Test
+    void testEqualsSameInstance() {
+        assertEquals(initialState, initialState, "State should be equal to itself.");
     }
 
     @Test
@@ -280,7 +366,7 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void testGetNextPlayer() {
+    void testGetCurrentPlayer() {
         assertEquals(PieceType.LIGHT, initialState.getCurrentPlayer());
         initialState.makeMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(1, 1)));
         assertEquals(PieceType.DARK, initialState.getCurrentPlayer());
@@ -289,41 +375,31 @@ class KnightSwapStateTest {
     }
 
     @Test
-    void testIsAttackedTrue() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method isAttackedMethod = KnightSwapState.class.getDeclaredMethod("isAttacked", Position.class, PieceType.class);
-        isAttackedMethod.setAccessible(true);
+    void testIsLegalMoveTargetAttackedByOpponent() {
+        KnightSwapState stateForAttackLogicTest = new KnightSwapState();
+        for (int r = 0; r < 4; r++) Arrays.fill(stateForAttackLogicTest.board[r], '.');
+        stateForAttackLogicTest.board[0][1] = PieceType.DARK.getSymbol();
+        stateForAttackLogicTest.board[3][0] = PieceType.LIGHT.getSymbol();
 
-        assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(1, 1), PieceType.DARK));
-
-        KnightSwapState stateForAttackTest = new KnightSwapState();
-        for (int r = 0; r < 4; r++) Arrays.fill(stateForAttackTest.board[r], '.');
-        stateForAttackTest.board[0][0] = PieceType.DARK.getSymbol();
-        stateForAttackTest.board[2][1] = '.';
-        stateForAttackTest.board[3][0] = '.';
-
-        assertTrue((boolean) isAttackedMethod.invoke(stateForAttackTest, new Position(2, 1), PieceType.DARK));
-
-        KnightSwapState stateForLightAttackTest = new KnightSwapState();
-        stateForLightAttackTest.board[3][0] = PieceType.LIGHT.getSymbol();
-        stateForLightAttackTest.board[1][1] = '.';
-        stateForLightAttackTest.board[0][0] = '.';
-
-        assertTrue((boolean) isAttackedMethod.invoke(stateForLightAttackTest, new Position(1, 1), PieceType.LIGHT));
+        assertFalse(stateForAttackLogicTest.isLegalMove(new TwoPhaseMoveState.TwoPhaseMove<>(new Position(3, 0), new Position(2, 2))));
     }
 
     @Test
-    void testIsAttackedFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testIsAttackedByReflectionTrue() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method isAttackedMethod = KnightSwapState.class.getDeclaredMethod("isAttacked", Position.class, PieceType.class);
         isAttackedMethod.setAccessible(true);
 
-        assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(0, 0), PieceType.DARK));
-        assertFalse((boolean) isAttackedMethod.invoke(initialState, new Position(1, 1), PieceType.DARK));
+        KnightSwapState state = new KnightSwapState();
+        state.board[0][0] = PieceType.DARK.getSymbol();
+        assertTrue((boolean) isAttackedMethod.invoke(state, new Position(2, 1), PieceType.DARK));
+    }
 
-        KnightSwapState stateNoAttacker = new KnightSwapState();
-        stateNoAttacker.board[0][0] = '.';
-        stateNoAttacker.board[3][0] = PieceType.LIGHT.getSymbol();
-        System.out.println(stateNoAttacker);
+    @Test
+    void testIsAttackedByReflectionFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method isAttackedMethod = KnightSwapState.class.getDeclaredMethod("isAttacked", Position.class, PieceType.class);
+        isAttackedMethod.setAccessible(true);
 
-        assertFalse((boolean) isAttackedMethod.invoke(stateNoAttacker, new Position(1, 2), PieceType.DARK));
+        KnightSwapState state = new KnightSwapState();
+        assertFalse((boolean) isAttackedMethod.invoke(state, new Position(1, 1), PieceType.DARK));
     }
 }

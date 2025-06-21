@@ -8,19 +8,17 @@ package knightswap.utils;
  * @param col The {@code int} column coordinate (0-2).
  */
 public record Position(int row, int col) {
-
     /**
-     * Constructs a {@code Position} instance, validating that the coordinates
-     * are within the bounds of a 4x3 board (row 0-3, col 0-2).
+     * Checks if this position's coordinates are within the specified board boundaries.
+     * This method does not validate the existence of a board, only the coordinate values themselves
+     * relative to the provided board dimensions.
      *
-     * @param row The {@code int} row coordinate.
-     * @param col The {@code int} column coordinate.
-     * @throws IllegalArgumentException If {@code row} or {@code col} are out of valid bounds.
+     * @param boardRows The total number of rows on the board (exclusive upper bound for row coordinate).
+     * @param boardCols The total number of columns on the board (exclusive upper bound for col coordinate).
+     * @return {@code true} if the row and column are within the valid range [0, boardRows-1] and [0, boardCols-1] respectively, {@code false} otherwise.
      */
-    public Position {
-        if (row < 0 || row >= 4 || col < 0 || col >= 3) {
-            throw new IllegalArgumentException("Invalid row or column for 4x3 board.");
-        }
+    public boolean isValidForBoard(int boardRows, int boardCols) {
+        return row >= 0 && row < boardRows && col >= 0 && col < boardCols;
     }
 
     /**
