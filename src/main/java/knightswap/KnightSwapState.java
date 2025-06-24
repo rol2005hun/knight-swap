@@ -19,6 +19,11 @@ import knightswap.utils.Position;
  * knight's move to an empty square that is not attacked by an opposing knight.
  */
 public class KnightSwapState implements TwoPhaseMoveState<Position> {
+    final int[][] knightMoves = {
+            {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+            {1, -2}, {1, 2}, {2, -1}, {2, 1}
+    };
+
     /**
      * The board representation, where 'D' is a dark knight, 'L' is a light knight, and '.' is an empty square.
      */
@@ -122,11 +127,6 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
 
                 if ((currentPlayer == PieceType.LIGHT && piece == PieceType.LIGHT.getSymbol()) ||
                         (currentPlayer == PieceType.DARK && piece == PieceType.DARK.getSymbol())) {
-
-                    int[][] knightMoves = {
-                            {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
-                            {1, -2}, {1, 2}, {2, -1}, {2, 1}
-                    };
 
                     for (int[] move : knightMoves) {
                         int endR = start.row() + move[0];
@@ -248,11 +248,6 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
     private boolean isAttacked(Position position, PieceType attackingPieceType) {
         char attackerSymbol = attackingPieceType.getSymbol();
         Logger.trace("Checking if position {} is attacked by {} pieces.", position, attackingPieceType);
-
-        int[][] knightMoves = {
-                {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
-                {1, -2}, {1, 2}, {2, -1}, {2, 1}
-        };
 
         for (int[] move : knightMoves) {
             Position attackerPos = new Position(position.row() + move[0], position.col() + move[1]);
