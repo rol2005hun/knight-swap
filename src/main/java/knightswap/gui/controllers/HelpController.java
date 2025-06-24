@@ -25,7 +25,7 @@ public class HelpController implements Initializable {
 
     /**
      * Constructs a new {@code HelpController}.
-     * This constructor is invoked by the FXML loader.
+     * The FXML loader invokes this constructor.
      */
     public HelpController() {
         Logger.debug("HelpController instance created.");

@@ -3,7 +3,7 @@ package knightswap.data;
 import org.tinylog.Logger;
 
 /**
- * Represents a player's record in the Knight Swap game, holding their name and best score.
+ * Represents a player's record in the Knight Swap game, holding their name and the best score.
  * The {@code bestScore} signifies the fewest moves taken to solve the puzzle.
  */
 public class PlayerScore {

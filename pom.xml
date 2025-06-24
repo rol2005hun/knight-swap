@@ -6,7 +6,7 @@
     <artifactId>homework-project-2025-rol2005hun</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <description>This application simulates a puzzle on a 4×3 chessboard where 3 white knights are placed on the bottom row and 3 black knights on the top row. The goal is to swap their positions using only legal knight moves. Knights cannot move to squares attacked by opposing knights, and players must alternate turns, starting with white.</description>
+    <description>This application simulates a puzzle on a 4×3 chessboard where three white knights are placed on the bottom row and three black knights on the top row. The goal is to swap their positions using only legal knight moves. Knights cannot move to squares attacked by opposing knights, and players must alternate turns, starting with white.</description>
     <url>https://github.com/INBPM0420L/homework-project-2025-rol2005hun</url>
     <developers>
         <developer>

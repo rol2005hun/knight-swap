@@ -46,7 +46,7 @@ public class KnightSwapApplication extends Application {
      * Sets up the primary stage and displays the initial welcome screen.
      *
      * @param stage The primary {@link Stage} for this application.
-     * @throws Exception If an error occurs during application start.
+     * @throws Exception If an error occurs during the application start.
      */
     @Override
     public void start(Stage stage) throws Exception {

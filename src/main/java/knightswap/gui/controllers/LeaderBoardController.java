@@ -40,7 +40,7 @@ public class LeaderBoardController {
 
     /**
      * Constructs a new {@code LeaderBoardController}.
-     * This constructor is invoked by the FXML loader.
+     * The FXML loader invokes this constructor.
      */
     public LeaderBoardController() {
         Logger.debug("LeaderBoardController instance created.");

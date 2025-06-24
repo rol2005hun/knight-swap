@@ -18,7 +18,7 @@ public final class GuiGame {
      * The main method that launches the JavaFX {@link KnightSwapApplication}.
      * This is the entry point for users to play the game with the GUI.
      *
-     * @param args Command line arguments (not utilized by the application).
+     * @param args Command line arguments (not used by the application).
      */
     public static void main(String[] args) {
         Application.launch(KnightSwapApplication.class, args);

@@ -58,7 +58,7 @@ public class KnightSwapController {
 
     /**
      * Constructs a new {@code KnightSwapController}.
-     * This constructor is invoked by the FXML loader.
+     * The FXML loader invokes this constructor.
      */
     public KnightSwapController() {
         Logger.debug("KnightSwapController instance created.");
@@ -243,7 +243,7 @@ public class KnightSwapController {
     }
 
     /**
-     * Handles the game solved state. Displays a congratulatory message,
+     * Handles the game-solved state. Displays a congratulatory message,
      * disables further moves, and attempts to save the player's score.
      */
     private void handleGameSolved() {

@@ -14,7 +14,7 @@ public class WelcomeController {
 
     /**
      * Constructs a new {@code WelcomeController}.
-     * This constructor is invoked by the FXML loader.
+     * The FXML loader invokes this constructor.
      */
     public WelcomeController() {
         Logger.debug("WelcomeController instance created.");

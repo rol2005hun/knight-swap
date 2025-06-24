@@ -1,13 +1,13 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/UkdUJk5L)
 # Knight Swap Chess Game
 
-We are given a 4-row by 3-column chessboard. In the top row, we place 3 black knights, and in the bottom row, we place 3 white knights.
+We are given a 4-row by 3-column chessboard. In the top row, we place three black knights, and in the bottom row, we place three white knights.
 
 The goal is to swap the positions of the two sets of knights.
 
 Rules:
 - Knights move according to the [standard rules](https://en.wikipedia.org/wiki/Knight_(chess)) of chess (L-shaped knight moves).
-- A knight cannot move to a square that is threatened by an opposing knight.
+- A knight cannot move to a square threatened by an opposing knight.
 - Players take turns: white moves first, then black, and so on.
 
 The puzzle is to find a valid sequence of moves that completes the swap under these constraints.
@@ -87,7 +87,7 @@ If the move you attempt is legal, the knight will be placed at the destination. 
 
 ---
 
-If you need assistance with the game rules, objectives, or the board's coordinate system, simply click the "Help" button, located on the Main screen.
+If you need assistance with the game rules, objectives, or the board's coordinate system, click the "Help" button, located on the Main screen.
 
 ![Help screen - Comments](https://i.imgur.com/SleY1C3.png)
 

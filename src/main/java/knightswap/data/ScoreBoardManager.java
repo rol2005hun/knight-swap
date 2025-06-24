@@ -42,7 +42,7 @@ public class ScoreBoardManager {
     }
 
     /**
-     * Loads player scores from the {@code scores.json} file.
+     * Loads' player scores from the {@code scores.json} file.
      * If the file does not exist or an error occurs during loading,
      * the internal list of scores is initialized as empty.
      */

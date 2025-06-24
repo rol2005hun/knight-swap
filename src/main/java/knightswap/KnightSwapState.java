@@ -14,7 +14,7 @@ import knightswap.utils.Position;
 /**
  * Represents the current state of the Knight Swap puzzle on a 4x3 board.
  * Dark knights ({@code 'D'}) start on row 0, and light knights ({@code 'L'}) start on row 3.
- * The game's objective is to swap their initial positions.
+ * The game's goal is to swap their initial positions.
  * Players (Light then Dark) take turns moving their knights. A move is valid if it's a standard
  * knight's move to an empty square that is not attacked by an opposing knight.
  */
@@ -179,7 +179,7 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
 
     /**
      * {@inheritDoc}
-     * Checks if a given move, specified as a {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object, is legal according to the game rules.
+     * Checks if a given move, specified as a {@link TwoPhaseMoveState.TwoPhaseMove<Position>} object, is legal, according to the game rules.
      * A move is legal if:
      * <ul>
      * <li>The move object and its positions are not null.</li>

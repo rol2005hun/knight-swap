@@ -24,7 +24,7 @@ public final class ConsoleGame {
      * Initializes the puzzle, applies a BFS algorithm to find a solution,
      * and logs the outcome, including the solution path length if found.
      *
-     * @param args Command line arguments (not utilized).
+     * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
         Logger.info("The KnightSwap game has been started.");
