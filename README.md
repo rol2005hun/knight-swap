@@ -14,34 +14,44 @@ The puzzle is to find a valid sequence of moves that completes the swap under th
 
 ## Building from Source
 
-Building the project requires JDK 24 or later and access to [GitHub Packages](https://docs.github.com/en/packages).
+Building the project requires JDK 24 or later. Make sure you have the correct JDK version installed before proceeding.
 
-GitHub Packages requires authentication using a personal access token (classic) that can be created [here](https://github.com/settings/tokens).
+### Prerequisites
+
+- JDK 24 or later
+- Apache Maven 3.8.0 or later
+- Git (not necessary)
+
+### Dependencies
 
 > [!IMPORTANT]
-> You must create a personal access token (PAT) with the `read:packages` scope.
+> You must install these two repositories to your local Maven repository, in this order:
+1. [homework-project-utils-2025](https://github.com/rol2005hun/knight-swap-utils)
+2. [homework-project-jfxutils](https://github.com/rol2005hun/knight-swap-utils2)
 
-You need a `settings.xml` file with the following content to store your PAT:
+### Build Instructions
 
-```xml
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <servers>
-        <server>
-            <id>github</id>
-            <username><!-- Your GitHub username --></username>
-            <password><!-- Your GitHub personal access token (classic) --></password>
-        </server>
-    </servers>
-</settings>
-```
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/rol2005hun/knight-swap.git
+   cd knight-swap
+   ```
 
-The `settings.xml` file must be placed in the `.m2` directory in your home directory, i.e., in the same directory that stores your local Maven repository.
+2. Build the project:
+   ```bash
+   mvn clean install
+   mvn package
+   ```
+
+3. The built JAR file will be available in the `target` directory.
 
 ## How to Run
 
-After successfully building the project (`mvn clean install`), you can run the game in two modes from your project's root directory:
+After successfully building the project, you can run the game in two modes:
+
+### Using Maven
+
+From your project's root directory:
 
 **Console version**
 
@@ -57,6 +67,20 @@ To launch the graphical user interface and play the puzzle game interactively:
 
 ```bash
 mvn exec:java -Dexec.mainClass="knightswap.GuiGame"
+```
+
+### Using the JAR file directly
+
+After building with `mvn clean install`, you can run the JAR file directly:
+
+```bash
+java -jar target\knight-swap-1.0.jar
+```
+
+This will launch the GUI version by default. To run the console version:
+
+```bash
+java -cp target\knight-swap-1.0.jar knightswap.ConsoleGame
 ```
 
 ## How to Play

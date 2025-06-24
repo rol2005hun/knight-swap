@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.unideb.inf</groupId>
-    <artifactId>homework-project-2025-rol2005hun</artifactId>
+    <artifactId>knight-swap</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
     <description>This application simulates a puzzle on a 4×3 chessboard where three white knights are placed on the bottom row and three black knights on the top row. The goal is to swap their positions using only legal knight moves. Knights cannot move to squares attacked by opposing knights, and players must alternate turns, starting with white.</description>
-    <url>https://github.com/INBPM0420L/homework-project-2025-rol2005hun</url>
+    <url>https://github.com/rol2005hun/knight-swap</url>
     <developers>
         <developer>
             <name>Ranyák Roland Adalbert</name>
