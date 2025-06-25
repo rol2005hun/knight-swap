@@ -10,7 +10,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
-import knightswap.data.ScoreBoardManager;
+import knightswap.data.ScoreboardManager;
 import knightswap.utils.GuiUtils;
 import knightswap.utils.RankedPlayerScore;
 import org.tinylog.Logger;
@@ -20,9 +20,9 @@ import java.util.List;
 /**
  * Controller class for the Leaderboard screen, displaying top player scores.
  * It populates a {@link TableView} with ranked player data retrieved from
- * {@link ScoreBoardManager} and manages the window's closure.
+ * {@link ScoreboardManager} and manages the window's closure.
  */
-public class LeaderBoardController {
+public class LeaderboardController {
     @FXML
     private TableView<RankedPlayerScore> leaderboardTable;
     @FXML
@@ -34,27 +34,27 @@ public class LeaderBoardController {
 
     private Stage gameStage;
 
-    private ScoreBoardManager scoreBoardManager;
+    private ScoreboardManager scoreboardManager;
 
     private final ObservableList<RankedPlayerScore> scores = FXCollections.observableArrayList();
 
     /**
-     * Constructs a new {@code LeaderBoardController}.
+     * Constructs a new {@code LeaderboardController}.
      * The FXML loader invokes this constructor.
      */
-    public LeaderBoardController() {
-        Logger.debug("LeaderBoardController instance created.");
+    public LeaderboardController() {
+        Logger.debug("LeaderboardController instance created.");
     }
 
     /**
-     * Sets the {@link ScoreBoardManager} instance for this controller.
+     * Sets the {@link ScoreboardManager} instance for this controller.
      * This method is used for Dependency Injection.
      *
-     * @param scoreBoardManager The {@link ScoreBoardManager} instance.
+     * @param scoreboardManager The {@link ScoreboardManager} instance.
      */
-    public void setScoreBoardManager(ScoreBoardManager scoreBoardManager) {
-        this.scoreBoardManager = scoreBoardManager;
-        Logger.debug("ScoreBoardManager injected into LeaderBoardController.");
+    public void setScoreboardManager(ScoreboardManager scoreboardManager) {
+        this.scoreboardManager = scoreboardManager;
+        Logger.debug("ScoreboardManager injected into LeaderboardController.");
     }
 
     /**
@@ -65,7 +65,7 @@ public class LeaderBoardController {
      */
     public void setGameStage(Stage gameStage) {
         this.gameStage = gameStage;
-        Logger.debug("Game stage set for LeaderBoardController.");
+        Logger.debug("Game stage set for LeaderboardController.");
     }
 
     /**
@@ -89,13 +89,13 @@ public class LeaderBoardController {
         leaderboardTable.getSortOrder().add(scoreColumn);
         scoreColumn.setSortType(TableColumn.SortType.ASCENDING);
 
-        if (scoreBoardManager == null) {
-            Logger.error("ScoreBoardManager is null. Cannot load scores. Ensure it's injected.");
+        if (scoreboardManager == null) {
+            Logger.error("ScoreboardManager is null. Cannot load scores. Ensure it's injected.");
         }
     }
 
     /**
-     * Loads the top player scores from the {@link ScoreBoardManager} and populates
+     * Loads the top player scores from the {@link ScoreboardManager} and populates
      * the {@link #leaderboardTable}.
      * The table is cleared before loading the top 100 scores.
      */
@@ -103,8 +103,8 @@ public class LeaderBoardController {
         scores.clear();
         Logger.debug("Clearing existing scores from leaderboard table.");
 
-        List<PlayerScore> topScores = scoreBoardManager.getTopScores(100);
-        Logger.debug("Received {} top scores from ScoreBoardManager.", topScores.size());
+        List<PlayerScore> topScores = scoreboardManager.getTopScores(100);
+        Logger.debug("Received {} top scores from ScoreboardManager.", topScores.size());
 
         int currentRank = 1;
         int previousScore = -1;

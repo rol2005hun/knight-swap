@@ -17,7 +17,7 @@
         <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 10 10 10;">
             <Button onAction="#showHelpScreen" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="Help" />
             <Region HBox.hgrow="ALWAYS" />
-            <Button onAction="#showLeaderBoard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="Leaderboard" />
+            <Button onAction="#showLeaderboard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" text="Leaderboard" />
         </HBox>
         <Separator style="-fx-padding: 0 10 0 10;" />
 

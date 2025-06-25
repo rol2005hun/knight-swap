@@ -12,7 +12,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import knightswap.data.PlayerScore;
-import knightswap.data.ScoreBoardManager;
+import knightswap.data.ScoreboardManager;
 import knightswap.gui.KnightSwapApplication;
 import org.tinylog.Logger;
 
@@ -52,7 +52,7 @@ public class KnightSwapController {
     private Position firstClickPosition = null;
 
     private KnightSwapState gameState;
-    private ScoreBoardManager scoreBoardManager;
+    private ScoreboardManager scoreboardManager;
 
     private final Map<Button, String> originalStyles = new HashMap<>();
 
@@ -89,8 +89,8 @@ public class KnightSwapController {
             Logger.info("Starting game for player: {}", playerName);
         }
 
-        if (scoreBoardManager == null) {
-            Logger.error("ScoreBoardManager is null. Game cannot start correctly without it. Ensure it's injected.");
+        if (scoreboardManager == null) {
+            Logger.error("ScoreboardManager is null. Game cannot start correctly without it. Ensure it's injected.");
         }
 
         resetGame();
@@ -251,12 +251,12 @@ public class KnightSwapController {
         Logger.info("KnightSwap puzzle solved in {} moves by {}.", movesMade, playerName);
         disableAllButtons();
 
-        if (scoreBoardManager != null) {
-            scoreBoardManager.addOrUpdatePlayerScore(playerName, movesMade);
+        if (scoreboardManager != null) {
+            scoreboardManager.addOrUpdatePlayerScore(playerName, movesMade);
             Logger.info("Score for player '{}' updated/added: {} moves.", playerName, movesMade);
             updateScoreAndStatusLabels();
         } else {
-            Logger.error("ScoreBoardManager is null, cannot save score for player {}. This should not happen if injected correctly.", playerName);
+            Logger.error("ScoreboardManager is null, cannot save score for player {}. This should not happen if injected correctly.", playerName);
         }
     }
 
@@ -280,10 +280,10 @@ public class KnightSwapController {
      * @param event The {@link ActionEvent} triggered by the "Leaderboard" button.
      * @throws IOException If the FXML for the leaderboard screen cannot be loaded.
      */
-    public void showLeaderBoard(ActionEvent event) throws IOException {
+    public void showLeaderboard(ActionEvent event) throws IOException {
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Logger.debug("Request to show leaderboard from game stage.");
-        KnightSwapApplication.showLeaderBoard(currentStage);
+        KnightSwapApplication.showLeaderboard(currentStage);
     }
 
     /**
@@ -361,8 +361,8 @@ public class KnightSwapController {
         currentScoreLabel.setText(String.valueOf(movesMade));
         Logger.debug("Current score label set to: {}.", movesMade);
 
-        if (scoreBoardManager != null && playerName != null && !playerName.isEmpty()) {
-            Optional<PlayerScore> bestScore = scoreBoardManager.getPlayerScore(playerName);
+        if (scoreboardManager != null && playerName != null && !playerName.isEmpty()) {
+            Optional<PlayerScore> bestScore = scoreboardManager.getPlayerScore(playerName);
             if (bestScore.isPresent()) {
                 bestScoreLabel.setText(String.valueOf(bestScore.get().getBestScore()));
                 Logger.debug("Best score label set to {} for player {}.", bestScore.get().getBestScore(), playerName);
@@ -372,7 +372,7 @@ public class KnightSwapController {
             }
         } else {
             bestScoreLabel.setText("0");
-            Logger.warn("Best score label set to 0. ScoreBoardManager or player name is unavailable (Manager available: {}, PlayerName available: {}).", scoreBoardManager != null, playerName != null);
+            Logger.warn("Best score label set to 0. ScoreboardManager or player name is unavailable (Manager available: {}, PlayerName available: {}).", scoreboardManager != null, playerName != null);
         }
     }
 
@@ -415,14 +415,14 @@ public class KnightSwapController {
     }
 
     /**
-     * Sets the {@link ScoreBoardManager} for this controller.
+     * Sets the {@link ScoreboardManager} for this controller.
      * This method is used for Dependency Injection, allowing the controller
      * to interact with the game's score management system.
      *
-     * @param scoreBoardManager The {@link ScoreBoardManager} instance to be used by this controller.
+     * @param scoreboardManager The {@link ScoreboardManager} instance to be used by this controller.
      */
-    public void setScoreBoardManager(ScoreBoardManager scoreBoardManager) {
-        this.scoreBoardManager = scoreBoardManager;
-        Logger.debug("ScoreBoardManager injected into KnightSwapController.");
+    public void setScoreboardManager(ScoreboardManager scoreboardManager) {
+        this.scoreboardManager = scoreboardManager;
+        Logger.debug("ScoreboardManager injected into KnightSwapController.");
     }
 }

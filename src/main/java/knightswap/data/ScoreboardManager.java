@@ -24,20 +24,20 @@ import java.util.stream.Collectors;
  * This class handles loading scores from and saving scores to a JSON file,
  * as well as updating individual player records.
  */
-public class ScoreBoardManager {
+public class ScoreboardManager {
     private static final Path SCORE_FILE_PATH = Paths.get("scores.json");
 
     private final Gson gson;
     private List<PlayerScore> playerScores;
 
     /**
-     * Constructs a new {@code ScoreBoardManager}.
+     * Constructs a new {@code ScoreboardManager}.
      * Initializes the {@link Gson} instance and attempts to load existing scores
      * from the {@code scores.json} file.
      */
-    public ScoreBoardManager() {
+    public ScoreboardManager() {
         gson = new GsonBuilder().setPrettyPrinting().create();
-        Logger.debug("ScoreBoardManager instance created. Attempting to load scores.");
+        Logger.debug("ScoreboardManager instance created. Attempting to load scores.");
         loadScores();
     }
 

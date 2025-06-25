@@ -3,10 +3,10 @@ package knightswap.gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import knightswap.data.ScoreBoardManager;
+import knightswap.data.ScoreboardManager;
 import knightswap.gui.controllers.HelpController;
 import knightswap.gui.controllers.KnightSwapController;
-import knightswap.gui.controllers.LeaderBoardController;
+import knightswap.gui.controllers.LeaderboardController;
 import knightswap.utils.GuiUtils;
 import org.tinylog.Logger;
 
@@ -15,10 +15,10 @@ import java.io.IOException;
 /**
  * The main application class for the Knight Swap GUI game.
  * This class extends {@link Application} and orchestrates the display of various scenes,
- * providing central access to the {@link ScoreBoardManager}.
+ * providing central access to the {@link ScoreboardManager}.
  */
 public class KnightSwapApplication extends Application {
-    private static ScoreBoardManager scoreBoardManager;
+    private static ScoreboardManager scoreboardManager;
     private static Stage primaryStage;
 
     /**
@@ -28,17 +28,17 @@ public class KnightSwapApplication extends Application {
     public KnightSwapApplication() {}
 
     /**
-     * Retrieves the singleton instance of the {@link ScoreBoardManager}.
+     * Retrieves the singleton instance of the {@link ScoreboardManager}.
      * The manager is initialized upon its first request.
      *
-     * @return The single instance of {@link ScoreBoardManager}.
+     * @return The single instance of {@link ScoreboardManager}.
      */
-    public static ScoreBoardManager getScoreBoardManager() {
-        if (scoreBoardManager == null) {
-            scoreBoardManager = new ScoreBoardManager();
-            Logger.info("ScoreBoardManager initialized.");
+    public static ScoreboardManager getScoreboardManager() {
+        if (scoreboardManager == null) {
+            scoreboardManager = new ScoreboardManager();
+            Logger.info("ScoreboardManager initialized.");
         }
-        return scoreBoardManager;
+        return scoreboardManager;
     }
 
     /**
@@ -70,7 +70,7 @@ public class KnightSwapApplication extends Application {
     /**
      * Loads and displays the main game board screen on the {@link #primaryStage}.
      * Sets the player's name via {@link KnightSwapController#setPlayerName(String)}
-     * and ensures the {@link ScoreBoardManager} is initialized.
+     * and ensures the {@link ScoreboardManager} is initialized.
      *
      * @param playerName The {@link String} name of the player.
      * @throws IOException If the {@code /chessboard.fxml} file cannot be loaded.
@@ -85,8 +85,8 @@ public class KnightSwapApplication extends Application {
         gameController.setPlayerName(playerName);
         Logger.debug("KnightSwapController player name injected.");
 
-        gameController.setScoreBoardManager(getScoreBoardManager());
-        Logger.debug("ScoreBoardManager injected into KnightSwapController.");
+        gameController.setScoreboardManager(getScoreboardManager());
+        Logger.debug("ScoreboardManager injected into KnightSwapController.");
 
         gameController.startGame();
 
@@ -128,7 +128,7 @@ public class KnightSwapApplication extends Application {
      * @param gameStageToReturnTo The {@link Stage} of the main game screen to return to.
      * @throws IOException If the {@code /leaderboard.fxml} file cannot be loaded.
      */
-    public static void showLeaderBoard(Stage gameStageToReturnTo) throws IOException {
+    public static void showLeaderboard(Stage gameStageToReturnTo) throws IOException {
         gameStageToReturnTo.hide();
         Logger.info("Main game screen hidden to show the leaderboard.");
 
@@ -136,25 +136,24 @@ public class KnightSwapApplication extends Application {
         GuiUtils.setStageIcon(leaderboardStage, GuiUtils.class);
         Logger.debug("Attempting to load leaderboard screen in new stage.");
 
-        FXMLLoader loader = GuiUtils.loadAndSetScene("/leaderboard.fxml", "Knight Swap - Leaderboard", leaderboardStage, controller -> {
-            if (controller instanceof LeaderBoardController) {
-                ((LeaderBoardController) controller).setGameStage(gameStageToReturnTo);
-                Logger.debug("LeaderBoardController game stage set.");
+        GuiUtils.loadAndSetScene("/leaderboard.fxml", "Knight Swap - Leaderboard", leaderboardStage, controller -> {
+            if (controller instanceof LeaderboardController leaderboardController) {
+                leaderboardController.setGameStage(gameStageToReturnTo);
+                Logger.debug("LeaderboardController game stage set.");
+
+                leaderboardController.setScoreboardManager(getScoreboardManager());
+                leaderboardController.loadScores();
             } else {
-                Logger.warn("Loaded controller for leaderboard.fxml is not a LeaderBoardController. Cannot set game stage.");
+                Logger.warn("Loaded controller for leaderboard.fxml is not a LeaderboardController. Cannot set game stage.");
             }
         });
-
-        LeaderBoardController leaderboardController = loader.getController();
-        leaderboardController.setScoreBoardManager(getScoreBoardManager());
-        leaderboardController.loadScores();
 
         Logger.info("Leaderboard opened in a new window.");
     }
 
     /**
      * Called when the application is stopped.
-     * Ensures that the game scores are saved via {@link ScoreBoardManager#saveScores()}
+     * Ensures that the game scores are saved via {@link ScoreboardManager#saveScores()}
      * before the application fully exits.
      *
      * @throws Exception If an error occurs during shutdown.
@@ -164,11 +163,11 @@ public class KnightSwapApplication extends Application {
         super.stop();
         Logger.info("Application is shutting down.");
 
-        if (scoreBoardManager != null) {
-            scoreBoardManager.saveScores();
+        if (scoreboardManager != null) {
+            scoreboardManager.saveScores();
             Logger.info("Scores saved on application shutdown.");
         } else {
-            Logger.warn("ScoreBoardManager was null on shutdown, no scores to save.");
+            Logger.warn("ScoreboardManager was null on shutdown, no scores to save.");
         }
     }
 }
