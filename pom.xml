@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.unideb.inf</groupId>
     <artifactId>knight-swap</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <description>This application simulates a puzzle on a 4×3 chessboard where three white knights are placed on the bottom row and three black knights on the top row. The goal is to swap their positions using only legal knight moves. Knights cannot move to squares attacked by opposing knights, and players must alternate turns, starting with white.</description>
     <url>https://github.com/rol2005hun/knight-swap</url>
