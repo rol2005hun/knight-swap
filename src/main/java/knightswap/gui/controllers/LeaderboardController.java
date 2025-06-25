@@ -88,10 +88,6 @@ public class LeaderboardController {
 
         leaderboardTable.getSortOrder().add(scoreColumn);
         scoreColumn.setSortType(TableColumn.SortType.ASCENDING);
-
-        if (scoreboardManager == null) {
-            Logger.error("ScoreboardManager is null. Cannot load scores. Ensure it's injected.");
-        }
     }
 
     /**
