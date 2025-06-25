@@ -19,7 +19,7 @@ import knightswap.utils.Position;
  * knight's move to an empty square that is not attacked by an opposing knight.
  */
 public class KnightSwapState implements TwoPhaseMoveState<Position> {
-    final int[][] knightMoves = {
+    static final int[][] knightMoves = {
             {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
             {1, -2}, {1, 2}, {2, -1}, {2, 1}
     };
@@ -251,11 +251,9 @@ public class KnightSwapState implements TwoPhaseMoveState<Position> {
 
         for (int[] move : knightMoves) {
             Position attackerPos = new Position(position.row() + move[0], position.col() + move[1]);
-            if (attackerPos.isValidForBoard(board.length, board[0].length)) {
-                if (getPieceAt(attackerPos) == attackerSymbol) {
-                    Logger.debug("Position {} attacked by {} piece at {}.", position, attackerSymbol, attackerPos);
-                    return true;
-                }
+            if (attackerPos.isValidForBoard(board.length, board[0].length) && getPieceAt(attackerPos) == attackerSymbol) {
+                Logger.debug("Position {} attacked by {} piece at {}.", position, attackerSymbol, attackerPos);
+                return true;
             }
         }
         Logger.trace("Position {} is NOT attacked by {} pieces.", position, attackingPieceType);

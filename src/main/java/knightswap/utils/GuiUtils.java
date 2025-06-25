@@ -39,8 +39,7 @@ public class GuiUtils {
         try {
             FXMLLoader loader = new FXMLLoader(callingClass.getResource("/chessboard.fxml"));
             if (loader.getLocation() == null) {
-                Logger.error("ERROR: 'chessboard.fxml' resource not found at /chessboard.fxml during fallback. " +
-                        "Check path and build configuration.");
+                Logger.error("ERROR: 'chessboard.fxml' resource not found at /chessboard.fxml during fallback. Check path and build configuration.");
                 return;
             }
             Parent root = loader.load();
@@ -100,21 +99,6 @@ public class GuiUtils {
                 }
             }
         });
-    }
-
-    /**
-     * A functional interface to allow configuring a controller after it's loaded.
-     * This is useful when the FXML loading utility needs to pass data or
-     * set specific properties on the controller instance.
-     */
-    @FunctionalInterface
-    public interface SceneControllerConfigurator {
-        /**
-         * Configures the loaded FXML controller.
-         *
-         * @param controller The controller object.
-         */
-        void configure(Object controller);
     }
 
     /**
